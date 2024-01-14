@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database
+db.sqlite3
+
+# Virtual environment
+ENV/
+venv/
+
+# Ignore the Python compiled bytecode files
+*.pyc
+
+# Ignore the local settings file
+inventario_snab/local_settings.py
+
+# Ignore the development SQLite database
+inventario/db.sqlite3
