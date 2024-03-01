@@ -11,13 +11,10 @@ class EnvasesGuiaRecepcionMpInline(admin.TabularInline):
      model = EnvasesGuiaRecepcionMp
      extra = 1
 
-
-
 @admin.register(RecepcionMp)
 class RecepcionAdmin(admin.ModelAdmin):
     list_display = ('id', 'guiarecepcion', 'creado_por')
     inlines = [EnvasesGuiaRecepcionMpInline]
-
 
 @admin.register(GuiaRecepcionMP)
 class GuiaRecepcionAdmin(admin.ModelAdmin):
