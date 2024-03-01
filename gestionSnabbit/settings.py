@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'cuentas.apps.CuentasConfig', 
     'bd_ciudades',
     'clientes.apps.ClientesConfig',
+    'proyectos.apps.ProyectosConfig',
     
     ## APPS de Mejoras 
     'django_extensions',
@@ -188,7 +189,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=50),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     # 'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     # 'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
