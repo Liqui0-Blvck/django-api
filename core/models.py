@@ -2,6 +2,26 @@
 from django.db import models
 from django.conf import settings
 from .estados_modelo import *
+from simple_history.models import HistoricalRecords as Historia
+
+class ModeloBase(models.Model):
+    fecha_creacion          = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion      = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        abstract = True
+
+
+class ModeloBaseHistorico(models.Model):
+    fecha_creacion          = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion      = models.DateTimeField(auto_now=True)
+    historia                = Historia(inherit = True)
+    
+    
+    class Meta:
+        abstract = True
+
+
 
 
 def user_directory_path(instance, filename):

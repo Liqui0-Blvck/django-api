@@ -31,5 +31,7 @@ django-tables2
 matplotlib
 django-docs
 daphne
-drf-nested-routers 
 XlsxWriter
+djoser
+djangorestframework-simplejwt
+django-cors-headers

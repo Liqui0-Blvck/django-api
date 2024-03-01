@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,6 +37,14 @@ INSTALLED_APPS = [
     
     'daphne',
     'channels',
+    
+    ## REST FRAMEWORK y AUTH ###
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'djoser',
+    'corsheaders',
+
     
     ## Core ##
     'django.contrib.admin',
@@ -64,10 +73,12 @@ INSTALLED_APPS = [
     'recepcionmp.apps.RecepcionmpConfig',
     'controlcalidad.apps.ControlcalidadConfig',
     'comercializador.apps.ComercializadorConfig',
+    'bodegas.apps.BodegasConfig',
     
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -219,3 +230,55 @@ ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+
+# CORS_ALLOWED_ORIGINS = [
+#     'https:11.11.12.8:3000',
+# ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=50),
+    # 'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    # 'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'USERNAME_CHANGED_EMAIL_CONFIRMATIOM': True,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATIOM': True,
+    'SEND_CONFIRMATION_EMAIL': True,
+    'SET_USERNAME_RETYPE': True,
+    'SET_PASSWORD_RETYPE': True,
+    'PASSWORD_RESET_CONFIRM_URL': 'auth/restablecer-contraseña/confirmar/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'email/reset/confirm/{uid}/{token}',
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
+    'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,
+    'ACTIVATION_URL': 'auth/registro/verificacion-cuenta/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'EMAIL': {
+        'activation': 'core.email.ActivationEmail',
+        'password_reset': 'core.email.PasswordResetEmail',
+    },
+    'SERIALIZERS': {}
+}
