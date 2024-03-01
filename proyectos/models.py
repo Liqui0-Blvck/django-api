@@ -2,6 +2,9 @@ from django.db import models
 from cuentas.models import *
 from core.models import *
 from .options_models import *
+from django.contrib.contenttypes.models import *
+from django.contrib.contenttypes.fields import GenericForeignKey
+
 # Create your models here.
 
 
@@ -10,11 +13,17 @@ class BasesProyectoTipo(ModeloBase):
   bases = models.ManyToManyField('self', through = 'proyectos.ServicioProyectoTipo')
   
   
+class ServicioProyectoPersonalizado(ModeloBase):
+  nombre = models.CharField(max_length=255)
+  descripcion = models.TextField(null=True, blank=True)
+  costo = models.IntegerField(default=0)
+  
+
 class ServicioProyectoTipo(ModeloBase):
   nombre = models.CharField(max_length=255)
   descripcion = models.TextField(null=True, blank=True)
   costo = models.IntegerField(default=0)
-  proyecto_tipo = models.ForeignKey('proyectos.BasesProyectoTipo', on_delete = models.CASCADE)
+  tipo_base = models.ForeignKey('proyectos.BasesProyectoTipo', on_delete = models.SET_NULL, null=True)
 
 
 class Proyecto(ModeloBase):
@@ -22,10 +31,13 @@ class Proyecto(ModeloBase):
   cliente = models.ForeignKey('clientes.Cliente', on_delete = models.CASCADE)
   registrado_por = models.ForeignKey(User, on_delete = models.CASCADE)
   tipo_proyecto = models.ForeignKey('proyectos.BasesProyectoTipo', on_delete = models.CASCADE)
-  servicios = models.ManyToManyField('proyectos.ServicioProyectoTipo', through = 'proyectos.ServicioEnProyecto')    
+  servicios = models.ManyToManyField('self', through = 'proyectos.ServicioEnProyecto')    
   
-  
+
 class ServicioEnProyecto(ModeloBase):
-  tipo = models.ForeignKey('proyectos.ServicioProyectoTipo', on_delete = models.CASCADE)
+  opciones = models.Q(app_label = 'proyectos', model = 'servicioproyectotipo') | models.Q(app_label = 'proyectos', model = 'servicioproyectopersonalizado')
+  tipo_servicio = models.ForeignKey(ContentType, on_delete = models.CASCADE, limit_choices_to=opciones)
+  id_servicio = models.PositiveIntegerField()
+  servicio = GenericForeignKey('tipo_servicio', 'id_servicio')
   proyecto = models.ForeignKey('proyectos.Proyecto', on_delete = models.CASCADE)
-  costo_servicio = models.IntegerField(default=0)
+  costo_servicio = models.IntegerField(default = 0)
