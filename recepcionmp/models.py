@@ -2,6 +2,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords as Historia
 from .estados_modelo import *
 from django.contrib.contenttypes.fields import GenericRelation
+from core.models import ModeloBase, ModeloBaseHistorico
 
 
 ############################### INICIO MODELO RECEPCION MATERIA PRIMA ##############################  
@@ -19,16 +20,14 @@ class EnvasesMp(models.Model):
         return "%s"% (self.nombre)
 
     
-class GuiaRecepcionMP(models.Model):
+class GuiaRecepcionMP(ModeloBase):
     creado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     comercializador  = models.ForeignKey("comercializador.Comercializador", on_delete=models.CASCADE,blank=True, null= True)     
     productor = models.ForeignKey("productores.Productor", on_delete=models.CASCADE)   
-    camionero = models.ForeignKey("productores.Chofer", on_delete=models.CASCADE, null=True, blank=True)
-    camion = models.ForeignKey("productores.Camion", on_delete=models.CASCADE, null=True, blank=True)  
-    guiasrecepcionmp = models.ManyToManyField('self', through='recepcionmp.RecepcionMp')
+    camionero = models.ForeignKey("core.Chofer", on_delete=models.CASCADE)
+    camion = models.ForeignKey("core.Camion", on_delete=models.CASCADE)  
+    lotesrecepcionmp = models.ManyToManyField('self', through='recepcionmp.RecepcionMp')
     estado_recepcion = models.CharField(choices=ESTADOSGUIARECEPCION_MP, max_length=1, default='1')
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True)
     mezcla_variedades = models.BooleanField(default=False)
     cierre_guia = models.BooleanField(default=False)
     tara_camion_1 = models.FloatField(null=True, blank=True, default=0)
@@ -45,18 +44,16 @@ class GuiaRecepcionMP(models.Model):
         return "%s %s "% (self.pk, self.productor)
 
 
-class RecepcionMp(models.Model):
+class RecepcionMp(ModeloBaseHistorico):
     guiarecepcion = models.ForeignKey("recepcionmp.GuiaRecepcionMP", on_delete=models.CASCADE)
     kilos_brutos_1 = models.FloatField(blank = True, null = True, default=0)
     kilos_brutos_2 = models.FloatField(blank = True, null = True, default=0)
     kilos_tara_1 = models.FloatField(blank = True, null = True, default=0)  
     kilos_tara_2 = models.FloatField(blank = True, null = True, default=0)      
     envases = models.ManyToManyField("recepcionmp.EnvasesMp", through='recepcionmp.EnvasesGuiaRecepcionMp')    
-    fecha_recepcion = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion = models.DateTimeField(auto_now=True)
     creado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     estado_recepcion = models.CharField(choices=ESTADOS_MP, max_length=1, default='1')
-    historia = Historia()    
+      
     
     
     class Meta:

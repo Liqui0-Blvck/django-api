@@ -60,54 +60,6 @@ class UsuariosProductor(models.Model):
     class Meta:
         constraints = [models.UniqueConstraint(fields =['user','productor'],name = 'userproduc')]
     
-    
-class Camion(models.Model):
-
-    patente = models.CharField(max_length=6, validators=[MinLengthValidator(6)])
-    acoplado = models.BooleanField(default=False, blank = True, null=True)
-    observaciones = models.TextField(max_length=150, blank = True, null=True)  
-
-
-
-    class Meta:
-
-        verbose_name = ('4.0 - Camion')
-        verbose_name_plural = ('4.0 - Camiones')
-       
-
-    def __str__(self):
-        patente2 = str(self.patente)
-        if self.acoplado:
-            acoplado_estado = "Con Acoplado"
-        else:
-            acoplado_estado = "Sin Acoplado"
-       
-        return "Patente %s, %s "% (patente2.upper(), acoplado_estado)
-
-
-
-
-class Chofer(models.Model):
-
-    nombre = models.CharField(max_length=50)
-    apellido = models.CharField(max_length=50)
-    rut = models.CharField(max_length=11, unique=True)
-    telefono = PhoneNumberField(blank=True)
-    
-    def nombre_completo(self):
-
-        return "%s %s"% (self.nombre, self.apellido)
-    
-
-
-    class Meta:
-
-        verbose_name = ('Chofer')
-        verbose_name_plural = ('Choferes')
-
-    def __str__(self):
-
-        return '%s %s '%(self.nombre, self.apellido)
 
 
 class ContratoProductor(models.Model):

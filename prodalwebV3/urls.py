@@ -18,4 +18,5 @@ urlpatterns = [
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/', include('recepcionmp.urls', namespace='recepcionmp')),
     path('api/', include('productores.urls', namespace='productores')),
+    path('api/', include('core.urls', namespace='core')),
 ]

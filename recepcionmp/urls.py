@@ -6,6 +6,7 @@ app_name = 'recepcionmp'
 
 router = routers.SimpleRouter()
 router.register(r'recepcionmp', GuiaRecepcionMPViewSet)
+router.register(r'envasesmp', EnvasesMpViewSet)
 
 lotes_guia = routers.NestedSimpleRouter(router, r'recepcionmp', lookup='recepcionmp')
 lotes_guia.register(r'lotes', RecepcionMpViewSet)

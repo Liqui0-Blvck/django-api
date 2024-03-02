@@ -20,12 +20,6 @@ class ProductorAdmin(admin.ModelAdmin):
 
     inlines = [UsuariosProductorInline,]
     
-    
-@admin.register(Camion)
-
-class CamionAdmin(admin.ModelAdmin):
-
-    list_display = ('patente', )
 
   
 @admin.register(PagoProductor)

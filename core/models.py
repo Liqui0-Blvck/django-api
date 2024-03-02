@@ -3,6 +3,9 @@ from django.db import models
 from django.conf import settings
 from .estados_modelo import *
 from simple_history.models import HistoricalRecords as Historia
+from django.core.validators import MinLengthValidator
+from django.db.models import constraints
+from phonenumber_field.modelfields import PhoneNumberField
 
 class ModeloBase(models.Model):
     fecha_creacion          = models.DateTimeField(auto_now_add=True)
@@ -30,7 +33,7 @@ def user_directory_path(instance, filename):
 
 
 ###################perfil usuario##########################
-class Perfil(models.Model):
+class Perfil(ModeloBase):
     """Model definition for Socio."""
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     sexo = models.CharField(max_length=1, choices=SEXO_CHOICES, default='O')
@@ -66,11 +69,10 @@ class CambioEstiloSitio(models.Model):
 ################### registros para recepcion de colosos #################
 
 
-class Operario(models.Model):
+class Operario(ModeloBase):
     nombre          = models.CharField(max_length=50)
     apellido        = models.CharField(max_length=50)
     rut             = models.CharField(max_length=50, unique=True)
-    fecha_registro  = models.DateTimeField(auto_now_add=True)
     tipo_operario   = models.CharField(max_length=10, choices=TIPOS_OPERARIO, default='seleccion' )
     activo          = models.BooleanField(default=True)
     etiquetas       = models.CharField(max_length=50, blank=True)
@@ -85,11 +87,9 @@ class Operario(models.Model):
     def __str__(self):
         return '%s %s'% (self.nombre, self.apellido)
 
-class Coloso(models.Model):
+class Coloso(ModeloBase):
     identificacion_coloso       = models.CharField(max_length=50, unique=True)
     tara                        = models.FloatField(default=0)
-    fecha_creacion              = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    fecha_registro              = models.DateTimeField()
     activo                      = models.BooleanField(default=True) 
     etiquetas                   = models.CharField(max_length=50, blank=True)     
 
@@ -103,11 +103,9 @@ class Coloso(models.Model):
         return '%s'% self.identificacion_coloso
 
 
-class Tractor(models.Model):
+class Tractor(ModeloBase):
     identificacion_tractor      = models.CharField(max_length=50, unique=True)
     tara                        = models.FloatField(default=0)
-    fecha_creacion              = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    fecha_registro              = models.DateTimeField()
     activo                      = models.BooleanField(default=True)
     etiquetas                   = models.CharField(max_length=50, blank=True)    
 
@@ -118,12 +116,11 @@ class Tractor(models.Model):
     def __str__(self):
         return '%s'% self.identificacion_tractor
     
-class TractorColoso(models.Model):
+class TractorColoso(ModeloBase):
     tractor = models.ForeignKey(Tractor, on_delete=models.SET_NULL, null=True, blank=True)
     coloso_1 = models.ForeignKey(Coloso, related_name='primer_coloso', on_delete=models.SET_NULL, null=True, blank=True)
     coloso_2 = models.ForeignKey(Coloso, related_name='segundo_coloso', on_delete=models.SET_NULL, null=True, blank=True)
     tara = models.FloatField(default=0.0)
-    fecha_creacion = models.DateField(auto_now_add=True)
     
     class Meta:
         verbose_name = 'Tractor con Coloso'
@@ -138,7 +135,7 @@ class TractorColoso(models.Model):
             return "Tractor %s con Coloso %s y %s de %s Kgs, con Fecha del %s"%(self.tractor, self.coloso_1, self.coloso_2, self.tara, fecha)
 
 
-class EtiquetasZpl(models.Model):
+class EtiquetasZpl(ModeloBase):
     nombre = models.CharField(max_length=70)
     zpl = models.TextField()
     
@@ -148,3 +145,42 @@ class EtiquetasZpl(models.Model):
 
     def __str__(self):
         return "%s"%(self.nombre)
+    
+
+    
+class Camion(ModeloBase):
+    patente = models.CharField(max_length=6, validators=[MinLengthValidator(6)])
+    acoplado = models.BooleanField(default=False, blank = True, null=True)
+    observaciones = models.TextField(max_length=150, blank = True, null=True)  
+    class Meta:
+        verbose_name = ('4.0 - Camion')
+        verbose_name_plural = ('4.0 - Camiones')
+  
+
+    def __str__(self):
+        patente2 = str(self.patente)
+        if self.acoplado:
+            acoplado_estado = "Con Acoplado"
+        else:
+            acoplado_estado = "Sin Acoplado"
+        return "Patente %s, %s "% (patente2.upper(), acoplado_estado)
+
+
+
+
+class Chofer(ModeloBase):
+    nombre = models.CharField(max_length=50)
+    apellido = models.CharField(max_length=50)
+    rut = models.CharField(max_length=11, unique=True)
+    telefono = PhoneNumberField(blank=True)
+    
+    def nombre_completo(self):
+        return "%s %s"% (self.nombre, self.apellido)
+    
+
+    class Meta:
+        verbose_name = ('Chofer')
+        verbose_name_plural = ('Choferes')
+
+    def __str__(self):
+        return '%s %s '%(self.nombre, self.apellido)

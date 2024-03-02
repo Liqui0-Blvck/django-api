@@ -79,10 +79,10 @@ class OperarioAdmin(admin.ModelAdmin):
 
 @admin.register(Coloso)
 class ColosoAdmin(admin.ModelAdmin):
-    list_display = ('identificacion_coloso','tara', 'activo', 'fecha_creacion', 'fecha_registro')
+    list_display = ('identificacion_coloso','tara', 'activo', 'fecha_creacion', )
 @admin.register(Tractor)
 class TractorAdmin(admin.ModelAdmin):
-    list_display = ('identificacion_tractor','tara', 'activo', 'fecha_creacion', 'fecha_registro')
+    list_display = ('identificacion_tractor','tara', 'activo', 'fecha_creacion', )
     
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('etiquetas')
