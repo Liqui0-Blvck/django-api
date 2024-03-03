@@ -23,7 +23,7 @@ class ServicioProyectoTipo(ModeloBase):
   nombre = models.CharField(max_length=255)
   descripcion = models.TextField(null=True, blank=True)
   costo = models.IntegerField(default=0)
-  tipo_base = models.ForeignKey('proyectos.BasesProyectoTipo', on_delete = models.SET_NULL, null=True)
+  tipo_base = models.ForeignKey('proyectos.BasesProyectoTipo', on_delete = models.CASCADE, null=True)
 
 
 class Proyecto(ModeloBase):

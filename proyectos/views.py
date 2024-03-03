@@ -19,6 +19,7 @@ class ProyectoUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
   def update(self, request, *args, **kwargs): 
     instance = self.get_object()
     serializer_proyecto = self.get_serializer(instance, data = request.data)
+    
 
     if serializer_proyecto.is_valid():
       servicios = request.data.get('servicios', [])
@@ -28,27 +29,29 @@ class ProyectoUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
       ServicioEnProyecto.objects.filter(id__in = servicios_eliminables).delete()
       
       for servicio in servicios:
-        print("servicio \n", servicio)
+        # print("servicio \n", servicio)
         servicio_id = servicio.get('id')
-        
+
         try:
           servicio_existente = ServicioEnProyecto.objects.get(pk = servicio_id)
-          print("existo dentro de servicio en proyecto", servicio_existente.costo_servicio)
+          # print("existo dentro de servicio en proyecto", servicio_existente.id)
           if instance.servicioenproyecto_set.filter(id = servicio_existente.id).exists():
+            nuevo_servicio = None
+            # ct_nuevo = None
+            
             
             ct = ContentType.objects.get(model = servicio_existente.tipo_servicio.model)
-            print()
             if ct.model == 'servicioproyectotipo':
-              nuevo_servicio = ServicioProyectoTipo.objects.get(id = servicio_id)
+              nuevo_servicio = ServicioProyectoTipo.objects.get(pk = servicio['id_servicio'])
             elif ct.model == 'servicioproyectopersonalizado':
-              nuevo_servicio = ServicioProyectoPersonalizado.objects.get(id = servicio_id)
-            
-            servicio_existente.id = nuevo_servicio.pk
+              nuevo_servicio = ServicioProyectoPersonalizado.objects.get(pk = servicio['id_servicio'])
+ 
+            servicio_existente.id_servicio = nuevo_servicio.pk
+            # servicio_existente.tipo_servicio.model = ct_nuevo.model
             servicio_existente.costo_servicio = servicio.get('costo_servicio')
             servicio_existente.save()
         except ServicioEnProyecto.DoesNotExist:
           servicio['proyecto'] = instance.pk
-          print(servicio)
           serializer_servicio = ServiciosEnProyectoSerializer(data=servicio)
           
           if serializer_servicio.is_valid():
@@ -88,7 +91,7 @@ class BaseProyectoTipoListCreateAPIView(ListCreateAPIView):
     serializer_base = self.get_serializer(data = request.data)
     if serializer_base.is_valid():
       base_proyecto = serializer_base.save()
-      bases = request.data.get('bases', [])
+      bases = request.data.get('servicios_base', [])
       print(bases)
       for servicio in bases:
         servicio['tipo_base'] = base_proyecto.pk

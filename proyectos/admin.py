@@ -12,3 +12,7 @@ class ProyectoAdmin(admin.ModelAdmin):
   list_display = ['id', 'nombre']
   inlines = [ServiciosEnProyectoINLINE, ]
     
+    
+@admin.register(BasesProyectoTipo)
+class BaseProyectosAdmin(admin.ModelAdmin):
+  list_display = ['id', 'nombre']
