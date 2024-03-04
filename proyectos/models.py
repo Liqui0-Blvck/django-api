@@ -10,7 +10,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 class BasesProyectoTipo(ModeloBase):
   nombre = models.CharField(max_length=255)
-  bases = models.ManyToManyField('self', through = 'proyectos.ServicioProyectoTipo')
+  servicios_base = models.ManyToManyField('self', through = 'proyectos.ServicioProyectoTipo')
   
   
 class ServicioProyectoPersonalizado(ModeloBase):
@@ -32,6 +32,7 @@ class Proyecto(ModeloBase):
   registrado_por = models.ForeignKey(User, on_delete = models.CASCADE)
   tipo_proyecto = models.ForeignKey('proyectos.BasesProyectoTipo', on_delete = models.CASCADE)
   servicios = models.ManyToManyField('self', through = 'proyectos.ServicioEnProyecto')    
+  etapas = models.ManyToManyField('proyectos.EtapasTipoProyecto', through='proyectos.EtapaEnProyecto')
   
 
 class ServicioEnProyecto(ModeloBase):
@@ -40,4 +41,27 @@ class ServicioEnProyecto(ModeloBase):
   id_servicio = models.PositiveIntegerField()
   servicio = GenericForeignKey('tipo_servicio', 'id_servicio')
   proyecto = models.ForeignKey('proyectos.Proyecto', on_delete = models.CASCADE)
-  costo_servicio = models.IntegerField(default = 0)
+  costo_servicio = models.IntegerField(default = 0, blank=True)
+  prioridad = models.IntegerField(default = 0, blank=True)
+  
+  class Meta:
+    ordering = ['prioridad']
+    
+  
+  
+class EtapasTipoProyecto(ModeloBase):
+    nombre = models.CharField(max_length=255)
+    descripcion = models.TextField(null=True, blank=True)
+    tipo_base_proyecto = models.ForeignKey('proyectos.BasesProyectoTipo', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.nombre
+      
+
+class EtapaEnProyecto(models.Model):
+    etapa = models.ForeignKey('proyectos.EtapasTipoProyecto', on_delete=models.CASCADE)
+    proyecto = models.ForeignKey('proyectos.Proyecto', on_delete=models.CASCADE)
+    servicio_en_proyecto = models.ForeignKey('proyectos.ServicioEnProyecto', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.etapa.nombre} en {self.proyecto.nombre}"

@@ -19,7 +19,5 @@ drf-nested-routers
 pyparsing
 django-import-export
 django-simple-history
-pygraphviz
 pyparsing 
 pydot
-graphviz

@@ -29,15 +29,12 @@ class ProyectoUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
       ServicioEnProyecto.objects.filter(id__in = servicios_eliminables).delete()
       
       for servicio in servicios:
-        # print("servicio \n", servicio)
         servicio_id = servicio.get('id')
 
         try:
           servicio_existente = ServicioEnProyecto.objects.get(pk = servicio_id)
-          # print("existo dentro de servicio en proyecto", servicio_existente.id)
           if instance.servicioenproyecto_set.filter(id = servicio_existente.id).exists():
             nuevo_servicio = None
-            # ct_nuevo = None
             
             
             ct = ContentType.objects.get(model = servicio_existente.tipo_servicio.model)
@@ -47,8 +44,8 @@ class ProyectoUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
               nuevo_servicio = ServicioProyectoPersonalizado.objects.get(pk = servicio['id_servicio'])
  
             servicio_existente.id_servicio = nuevo_servicio.pk
-            # servicio_existente.tipo_servicio.model = ct_nuevo.model
             servicio_existente.costo_servicio = servicio.get('costo_servicio')
+            servicio_existente.prioridad = servicio.get('prioridad')
             servicio_existente.save()
         except ServicioEnProyecto.DoesNotExist:
           servicio['proyecto'] = instance.pk
@@ -117,3 +114,18 @@ class ContentTypeListAPIView(ListAPIView):
   def get_queryset(self):
     models = ['servicioproyectopersonalizado', 'servicioproyectotipo']
     return ContentType.objects.filter(model__in=models)
+  
+  
+  
+  
+  
+  
+class EtapaTipoProyectoListCreateAPIView(ListCreateAPIView):
+  queryset = EtapasTipoProyecto.objects.all()
+  serializer_class = EtapasTipoProyectoSerializer
+  
+
+
+class EtapaEnProyectoListCreateAPIView(ListCreateAPIView):
+  queryset = EtapaEnProyecto.objects.all()
+  serializer_class = EtapaEnProyectoSerializer
