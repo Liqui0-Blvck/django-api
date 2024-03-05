@@ -5,12 +5,12 @@ from .models import *
 class OperarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operario
-        fields = '__all__'
+        fields = '__all__'  
 
 
 
 class ColosoSerializer(serializers.ModelSerializer):
-    class Meta:
+    class Meta: 
         model = Coloso
         fields = '__all__'
         

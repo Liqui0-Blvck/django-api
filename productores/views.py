@@ -8,6 +8,6 @@ from rest_framework import viewsets
 class ProductorViewSet(viewsets.ModelViewSet):
     queryset = Productor.objects.all()
     serializer_class = ProductorSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
 
