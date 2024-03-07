@@ -72,3 +72,8 @@ class CamionViewSet(viewsets.ModelViewSet):
     queryset = Camion.objects.all()
     serializer_class = CamionSerializer
     # permission_classes = [IsAuthenticated]
+    
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
