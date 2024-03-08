@@ -74,6 +74,8 @@ INSTALLED_APPS = [
     'controlcalidad.apps.ControlcalidadConfig',
     'comercializador.apps.ComercializadorConfig',
     'bodegas.apps.BodegasConfig',
+    'comunas',
+    
     
 ]
 
@@ -120,7 +122,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
+    'db_comunas': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'comunaschile',
+            'USER': 'vpsprodal03',
+            'HOST': 'prodalmen.cl',
+            'PASSWORD': 'HQ@2hha34Dsf!J%',
+            'PORT': 5432,
+        }
 }
 
 
@@ -247,9 +257,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ]
 }
 
 
@@ -281,4 +291,8 @@ DJOSER = {
         'password_reset': 'core.email.PasswordResetEmail',
     },
     'SERIALIZERS': {}
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 }
