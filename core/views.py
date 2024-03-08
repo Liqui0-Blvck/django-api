@@ -11,32 +11,32 @@ class PerfilViewSet(viewsets.ModelViewSet):
 
     queryset = Perfil.objects.all()
     serializer_class = PerfilSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
 class ColosoViewSet(viewsets.ModelViewSet):
 
     queryset = Coloso.objects.all()
     serializer_class = ColosoSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
 class OperarioViewSet(viewsets.ModelViewSet):
 
     queryset = Operario.objects.all()
     serializer_class = OperarioSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     
 class TractorViewSet(viewsets.ModelViewSet):
 
     queryset = Tractor.objects.all()
     serializer_class = TractorSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
 class TractorColosoViewSet(viewsets.ModelViewSet):
 
     queryset = TractorColoso.objects.all()
     serializer_class = TractorColosoSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     def retrieve(self, request, tractores_pk=None, pk=None):
         queryset = self.queryset.filter(tractor=tractores_pk, pk=pk)
@@ -59,21 +59,22 @@ class EtiquetasZplViewSet(viewsets.ModelViewSet):
 
     queryset = EtiquetasZpl.objects.all()
     serializer_class = EtiquetasZplSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
 class ChoferViewSet(viewsets.ModelViewSet):
 
     queryset = Chofer.objects.all()
     serializer_class = ChoferSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
 class CamionViewSet(viewsets.ModelViewSet):
 
     queryset = Camion.objects.all()
     serializer_class = CamionSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]

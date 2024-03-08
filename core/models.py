@@ -149,7 +149,7 @@ class EtiquetasZpl(ModeloBase):
 
     
 class Camion(ModeloBase):
-    patente = models.CharField(max_length=6, validators=[MinLengthValidator(6)])
+    patente = models.CharField(max_length=6, validators=[MinLengthValidator(6)], unique=True)
     acoplado = models.BooleanField(default=False, blank = True, null=True)
     observaciones = models.TextField(max_length=150, blank = True, null=True)  
     class Meta:
