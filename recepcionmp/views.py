@@ -45,6 +45,7 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def create(self, request, recepcionmp_pk=None, *args, **kwargs):
+        print(request.data)
         serializer = self.get_serializer(data=request.data)
         envases = request.data['envases']
         serializador_envases = EnvasesGuiaRecepcionMpSerializer(data=envases, many=True)
@@ -52,7 +53,7 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         guiarecepcion = GuiaRecepcionMP.objects.get(pk=recepcionmp_pk)
         serializer.save(guiarecepcion=guiarecepcion)
-        serializador_envases.save(recepcionmp=serializer.instance)
+        serializador_envases.save(recepcionmp=serializer.request.data.get('guiarecepcion'))
         return Response(serializer.data, status=status.HTTP_201_CREATED)    
     
     def list(self, request, recepcionmp_pk=None):
