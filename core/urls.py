@@ -12,7 +12,6 @@ router.register(r'tractores', TractorViewSet)
 router.register(r'etiquetas-zpl', EtiquetasZplViewSet)
 router.register(r'choferes', ChoferViewSet)
 router.register(r'camiones', CamionViewSet)
-router.register(r'users', UserViewSet)
 
 tractor_coloso = routers.NestedSimpleRouter(router, r'tractores', lookup='tractores')
 tractor_coloso.register(r'coloso-tractor', TractorColosoViewSet)
@@ -20,4 +19,5 @@ tractor_coloso.register(r'coloso-tractor', TractorColosoViewSet)
 urlpatterns = [
     path(r'registros/', include(router.urls)),
     path(r'registros/', include(tractor_coloso.urls)),
+    path('users/<int:id>', UserAPIView.as_view()),
 ]

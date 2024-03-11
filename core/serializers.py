@@ -58,5 +58,5 @@ class ChoferSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'username']
+        fields = ['id', 'first_name', 'last_name', 'email', 'username']
         # fields = '__all__'    
