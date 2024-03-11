@@ -6,6 +6,7 @@ from rest_framework.permissions import *
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import *
+import json
 
 
 class GuiaRecepcionMPViewSet(viewsets.ModelViewSet):
@@ -46,9 +47,10 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def create(self, request, recepcionmp_pk=None, *args, **kwargs):
-        print(request.data)
+        # print(request.data)
         serializer = self.get_serializer(data=request.data)
-        envases = request.data['envases']
+        envases_request = request.data['envases']
+        envases = json.loads(envases_request)
         serializador_envases = EnvasesGuiaRecepcionMpSerializer(data=envases, many=True)
         serializer.is_valid(raise_exception=True)
         guiarecepcion = GuiaRecepcionMP.objects.get(pk=recepcionmp_pk)
