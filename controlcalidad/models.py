@@ -22,7 +22,7 @@ class FotosCC(models.Model):
 class CCRecepcionMateriaPrima(models.Model):
     recepcionmp = models.ForeignKey("recepcionmp.RecepcionMp", on_delete=models.CASCADE)
     cc_registrado_por = models.ForeignKey("auth.User", verbose_name="usuario_cc", on_delete=models.CASCADE, blank=True, null=True)
-    estado_cr = models.CharField(choices=ESTADOS_CONTROL_RENDIMIENTO, default='a', max_length=1)
+    #estado_cr = models.CharField(choices=ESTADOS_CONTROL_RENDIMIENTO, default='a', max_length=1)
     humedad = models.FloatField(blank=True, null=True)
     presencia_insectos = models.BooleanField(blank=True, null=True, default=False)
     observaciones = models.CharField(max_length=300, blank=True, null=True)
@@ -31,7 +31,7 @@ class CCRecepcionMateriaPrima(models.Model):
     estado_cc = models.CharField(choices=ESTADO_CONTROL,max_length=1,default='2')
     control_rendimiento = models.ManyToManyField('self', through='CCRendimiento')
     historia = Historia()
-    estado_aprobacion_cc = models.CharField(max_length=1, choices=ESTADO_APROBACION_CC, default='0')
+    estado_aprobacion_cc = models.CharField(max_length=1, choices=ESTADO_APROBACION_CC_X_JEFATURA, default='0')
     
     class Meta:
         verbose_name = ('CC Recepcion Mp')
@@ -43,7 +43,7 @@ class CCRecepcionMateriaPrima(models.Model):
 
 
 class CCRendimiento(models.Model):    
-    cc_recepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.SET_NULL, null=True)
+    cc_recepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.CASCADE)
     #cc_guiarecepcionmp = models.ForeignKey("controlcalidad.CCGuiaRecepcionMateriaPrima", on_delete=models.SET_NULL, null=True)
     peso_muestra =  models.FloatField(blank=True, null =True, default=0.0)
     basura = models.FloatField(blank=True, null =True, default=0.0)
@@ -98,7 +98,7 @@ class CCPepa(models.Model):
     observaciones           = models.CharField(max_length=300, blank=True, null=True)
     historia                = Historia()
 
-    
+
     
     class Meta:
         verbose_name = ('CC Pepa muestra')

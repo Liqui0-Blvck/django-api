@@ -258,10 +258,15 @@ REST_FRAMEWORK = {
     ],
     # 'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticated',
+<<<<<<< HEAD
     # ]
     
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     
+=======
+    # ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+>>>>>>> master
 }
 
 
@@ -317,4 +322,8 @@ DJOSER = {
         'password_reset': 'core.email.PasswordResetEmail',
     },
     'SERIALIZERS': {}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

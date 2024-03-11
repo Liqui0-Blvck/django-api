@@ -6,6 +6,7 @@ from rest_framework.permissions import *
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import *
+import json
 
 
 class GuiaRecepcionMPViewSet(viewsets.ModelViewSet):
@@ -40,20 +41,23 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
         return DetalleRecepcionMpSerializer
     
     def retrieve(self, request, recepcionmp_pk=None, pk=None):
-        queryset = self.queryset.filter(guiarecepcion=recepcionmp_pk, pk=pk)
-        serializer = self.serializer_class(queryset, many=True)
+        guiarecepcion = GuiaRecepcionMP.objects.get(pk=recepcionmp_pk)
+        queryset = RecepcionMp.objects.get(guiarecepcion=guiarecepcion, pk=pk)
+        serializer = RecepcionMpSerializer(queryset)
         return Response(serializer.data)
     
     def create(self, request, recepcionmp_pk=None, *args, **kwargs):
+        # print(request.data)
         serializer = self.get_serializer(data=request.data)
-        envases = request.data['envases']
+        envases_request = request.data['envases']
+        envases = json.loads(envases_request)
         serializador_envases = EnvasesGuiaRecepcionMpSerializer(data=envases, many=True)
-        serializador_envases.is_valid(raise_exception=True)
         serializer.is_valid(raise_exception=True)
         guiarecepcion = GuiaRecepcionMP.objects.get(pk=recepcionmp_pk)
         serializer.save(guiarecepcion=guiarecepcion)
+        serializador_envases.is_valid(raise_exception=True)        
         serializador_envases.save(recepcionmp=serializer.instance)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)    
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def list(self, request, recepcionmp_pk=None):
         queryset = self.queryset.filter(guiarecepcion=recepcionmp_pk)

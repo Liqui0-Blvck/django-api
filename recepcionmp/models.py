@@ -3,6 +3,8 @@ from simple_history.models import HistoricalRecords as Historia
 from .estados_modelo import *
 from django.contrib.contenttypes.fields import GenericRelation
 from core.models import ModeloBase, ModeloBaseHistorico
+from django.db import models, IntegrityError
+from django.core.exceptions import ValidationError
 
 
 ############################### INICIO MODELO RECEPCION MATERIA PRIMA ##############################  
@@ -43,6 +45,14 @@ class GuiaRecepcionMP(ModeloBase):
     def __str__(self):
         return "%s %s "% (self.pk, self.productor)
 
+def validate_unique_relationships(instance):
+    if instance.numero_lote and instance.fecha_creacion__year:
+        # Check if there's another object with the same numero_lote and year of fecha_creacion
+        if instance.__class__.objects.filter(numero_lote=instance.numero_lote,
+                                              fecha_creacion__year=instance.fecha_creacion__year).exists():
+            raise IntegrityError('There is already an object with the same numero_lote and year of fecha_creacion.')
+
+
 
 class RecepcionMp(ModeloBaseHistorico):
     guiarecepcion = models.ForeignKey("recepcionmp.GuiaRecepcionMP", on_delete=models.CASCADE)
@@ -53,12 +63,19 @@ class RecepcionMp(ModeloBaseHistorico):
     envases = models.ManyToManyField("recepcionmp.EnvasesMp", through='recepcionmp.EnvasesGuiaRecepcionMp')    
     creado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     estado_recepcion = models.CharField(choices=ESTADOS_MP, max_length=1, default='1')
+    numero_lote = models.IntegerField()
       
-    
+    def clean(self):
+        validate_unique_relationships(self)
     
     class Meta:
         verbose_name = ('1.1 Lote de Guia Recepción MP')
         verbose_name_plural = ('1.1 Lotes de Recepción MP')
+        
+        constraints = [
+            models.UniqueConstraint(name='%(app_label)s_%(class)s_unique_relationships',
+                                    fields=['numero_lote', 'fecha_creacion'])
+        ]
 
     def __str__(self):
         return "Lote N° %s"% (self.pk)

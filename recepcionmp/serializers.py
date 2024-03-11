@@ -54,15 +54,13 @@ class DetalleGuiaRecepcionMPSerializer(serializers.ModelSerializer):
 class EnvasesGuiaRecepcionMpSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnvasesGuiaRecepcionMp
-        fields = '__all__'
+        fields = ['envase', 'variedad', 'tipo_producto', 'cantidad_envases']
 
-class EnvasesGuiaRecepcionMpSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EnvasesGuiaRecepcionMp
-        fields = '__all__'
+        
 
 class DetalleRecepcionMpSerializer(serializers.ModelSerializer):
     envases = EnvasesGuiaRecepcionMpSerializer(many=True, read_only=True, source='envasesguiarecepcionmp_set')
+    
     class Meta:
         model = RecepcionMp
         fields = '__all__'

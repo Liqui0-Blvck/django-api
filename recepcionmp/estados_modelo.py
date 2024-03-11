@@ -98,7 +98,7 @@ VARIEDADES_MP = (
 ('SL','Solano'),
 ('MO','Mono'),
 ('CM','Carmel'),
-('RB','Ruby'),
+('RB','Ruby'),  
 ('PR','Price'),
 ('WC','Wood Colony'),
 ('TK','Tokio'),
