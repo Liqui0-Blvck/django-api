@@ -6,7 +6,7 @@ ESTADO_CONTROL = (
 
 )
 
-ESTADO_APROBACION_CC = (
+ESTADO_APROBACION_CC_X_JEFATURA = (
     ('0', 'En Espera de Aprobación'),
     ('1', 'Aprobado'),
     ('2', 'Rechazado'),

@@ -46,10 +46,10 @@ class GuiaRecepcionMP(ModeloBase):
         return "%s %s "% (self.pk, self.productor)
 
 def validate_unique_relationships(instance):
-    if instance.numero_lote and instance.fecha_creacion:
+    if instance.numero_lote and instance.fecha_creacion__year:
         # Check if there's another object with the same numero_lote and year of fecha_creacion
         if instance.__class__.objects.filter(numero_lote=instance.numero_lote,
-                                              fecha_creacion__year=instance.fecha_creacion.year).exists():
+                                              fecha_creacion__year=instance.fecha_creacion__year).exists():
             raise IntegrityError('There is already an object with the same numero_lote and year of fecha_creacion.')
 
 
