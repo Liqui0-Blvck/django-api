@@ -23,9 +23,6 @@ class GuiaRecepcionMPViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # usuario = User.objects.get(pk = request.user)
-        # print(usuario)
-        # # serializer.save(creado_por=usuario)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
@@ -47,16 +44,20 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def create(self, request, recepcionmp_pk=None, *args, **kwargs):
-        # print(request.data)
-        serializer = self.get_serializer(data=request.data)
-        envases_request = request.data['envases']
-        envases = json.loads(envases_request)
-        serializador_envases = EnvasesGuiaRecepcionMpSerializer(data=envases, many=True)
-        serializer.is_valid(raise_exception=True)
+        lotes_request = request.data.get('lotes', '[]')
+        lotes = json.loads(lotes_request)
+        for lote in lotes:
+            serializer = self.get_serializer(data=lote)
+            if serializer.is_valid():
+                serializer.save()
+            envases_request = request.data.get('envases', '[]')
+            envases = json.loads(envases_request)
+            for envase in envases:
+                serializador_envases = EnvasesGuiaRecepcionMpSerializer(data=envase)
+                if serializador_envases.is_valid():
+                    serializador_envases.save(recepcionmp = serializer.instance)
         guiarecepcion = GuiaRecepcionMP.objects.get(pk=recepcionmp_pk)
         serializer.save(guiarecepcion=guiarecepcion)
-        serializador_envases.is_valid(raise_exception=True)        
-        serializador_envases.save(recepcionmp=serializer.instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def list(self, request, recepcionmp_pk=None):
@@ -70,3 +71,7 @@ class EnvasesMpViewSet(viewsets.ModelViewSet):
     queryset = EnvasesMp.objects.all()
     serializer_class = EnvasesMpSerializer
     # permission_classes = [IsAuthenticated, ]
+
+class EnvasesGuiaMPViewSet(viewsets.ModelViewSet):
+    queryset = EnvasesGuiaRecepcionMp.objects.all()
+    serializer_class = EnvasesGuiaRecepcionSerializer

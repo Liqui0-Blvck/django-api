@@ -71,20 +71,10 @@ class CamionViewSet(viewsets.ModelViewSet):
 
     queryset = Camion.objects.all()
     serializer_class = CamionSerializer
-<<<<<<< HEAD
     # permission_classes = [IsAuthenticated]
-=======
-    permission_classes = [IsAuthenticated]
-    
->>>>>>> master
 
 class UserAPIView(generics.RetrieveAPIView):
     queryset = User.objects.all()
-<<<<<<< HEAD
     lookup_field = 'id'
     http_method_names = ['get']
     serializer_class = UserSerializer
-=======
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
->>>>>>> master
