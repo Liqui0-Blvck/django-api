@@ -76,6 +76,12 @@ class EnvasesMpSerializer(serializers.ModelSerializer):
         model = EnvasesMp
         fields = '__all__'
         
+        
+class EstadoRecepcionUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecepcionMp
+        fields = ['estado_recepcion']
+        
 
 
 

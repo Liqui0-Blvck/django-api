@@ -12,9 +12,9 @@ class CCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
 class DetalleCCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
     estado_aprobacion_cc = serializers.SerializerMethodField()
     estado_cc = serializers.SerializerMethodField()
-    presencia_insectos = serializers.SerializerMethodField()
+    presencia_insectos_selected = serializers.SerializerMethodField()
     
-    def get_presencia_insectos(self, obj):
+    def get_presencia_insectos_selected(self, obj):
         if obj.presencia_insectos:
             return  "Si"
         else:

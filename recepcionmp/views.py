@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from .models import *
 from .serializers import *
 from rest_framework.permissions import *
@@ -46,6 +46,7 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
     def create(self, request, recepcionmp_pk=None, *args, **kwargs):
         lotes_request = request.data.get('lotes', '[]')
         lotes = json.loads(lotes_request)
+
         for lote in lotes:
             serializer = self.get_serializer(data=lote)
             if serializer.is_valid():
@@ -59,6 +60,10 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
         guiarecepcion = GuiaRecepcionMP.objects.get(pk=recepcionmp_pk)
         serializer.save(guiarecepcion=guiarecepcion)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def update(self, request, *args, **kwargs):
+        print('')
+        return super().update(request, *args, **kwargs)
     
     def list(self, request, recepcionmp_pk=None):
         queryset = self.queryset.filter(guiarecepcion=recepcionmp_pk)
@@ -74,4 +79,30 @@ class EnvasesMpViewSet(viewsets.ModelViewSet):
 
 class EnvasesGuiaMPViewSet(viewsets.ModelViewSet):
     queryset = EnvasesGuiaRecepcionMp.objects.all()
-    serializer_class = EnvasesGuiaRecepcionSerializer
+    
+    def get_serializer_class(self): 
+        return EnvasesGuiaRecepcionSerializer
+    
+    def create(self, request, *args, **kwargs):
+        envase_guia = request.data.get('envases', '[]')
+        envases = json.loads(envase_guia)
+        for envase in envases:
+            envase_existente = EnvasesGuiaRecepcionMp.objects.filter(recepcionmp=envase['recepcionmp'], envase=envase['envase']).first()
+            if envase_existente:
+                # Actualizar envase existente si es necesario
+                pass  # Aquí pondrías la lógica de actualización
+            else:
+                serializer = self.get_serializer(data=envase)
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response("Envases creados o actualizados correctamente", status=status.HTTP_201_CREATED)
+    
+    
+
+class EstadoRecepcionUpdateAPIView(generics.UpdateAPIView):
+    lookup_field = 'id'
+    queryset = RecepcionMp.objects.all()
+    serializer_class = EstadoRecepcionUpdateSerializer

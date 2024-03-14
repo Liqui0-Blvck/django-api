@@ -15,4 +15,5 @@ lotes_guia.register(r'lotes', RecepcionMpViewSet)
 urlpatterns = [
     path(r'', include(router.urls)),
     path(r'', include(lotes_guia.urls)),
+    path('estado-update/<int:id>', EstadoRecepcionUpdateAPIView.as_view())
 ]
