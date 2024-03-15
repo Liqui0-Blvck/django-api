@@ -32,6 +32,7 @@ def user_directory_path(instance, filename):
     return 'perfiles/{0}/fotoperfil/{1}'.format(instance.user.username, filename)
 
 
+
 ###################perfil usuario##########################
 class Perfil(ModeloBase):
     """Model definition for Socio."""

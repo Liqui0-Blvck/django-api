@@ -57,9 +57,6 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
         serializer.save(guiarecepcion=guiarecepcion)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-    def update(self, request, *args, **kwargs):
-        print('')
-        return super().update(request, *args, **kwargs)
     
     def list(self, request, recepcionmp_pk=None):
         queryset = self.queryset.filter(guiarecepcion=recepcionmp_pk)
@@ -83,7 +80,7 @@ class EnvasesGuiaMPViewSet(viewsets.ModelViewSet):
         envases = json.loads(envase_guia)
         envase_ids_in_request = [envase.get('envase') for envase in envases]
         envase_instance = EnvasesGuiaRecepcionMp.objects.filter(envase__in=envase_ids_in_request)
-        envase_instance_list = set(envase_instance.values_list('id', flat=True))
+        envase_instance_list = set(envase_instance.values_list( 'id', flat=True))
         
         
         for envase in envases:

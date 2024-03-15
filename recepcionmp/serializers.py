@@ -22,7 +22,7 @@ class DetalleGuiaRecepcionMPSerializer(serializers.ModelSerializer):
     lotesrecepcionmp =RecepcionMpSerializer(many=True, read_only=True, source='recepcionmp_set')
     nombre_camion = serializers.SerializerMethodField()
     nombre_camionero = serializers.SerializerMethodField()
-    estado_recepcion = serializers.SerializerMethodField()
+    estado_recepcion_label = serializers.SerializerMethodField()
     nombre_productor = serializers.SerializerMethodField()
     nombre_comercializador = serializers.SerializerMethodField()
     nombre_creado_por = serializers.SerializerMethodField()
@@ -40,7 +40,7 @@ class DetalleGuiaRecepcionMPSerializer(serializers.ModelSerializer):
     def get_nombre_productor(self, obj):
         return obj.productor.nombre
     
-    def get_estado_recepcion(self, obj):
+    def get_estado_recepcion_label(self, obj):
         return obj.get_estado_recepcion_display()
     
     def get_nombre_camionero(self, obj):
@@ -57,15 +57,11 @@ class DetalleGuiaRecepcionMPSerializer(serializers.ModelSerializer):
 
 
 class EnvasesGuiaRecepcionMpSerializer(serializers.ModelSerializer):
-    variedad_envase = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = EnvasesGuiaRecepcionMp
         fields = ['envase', 'variedad', 'tipo_producto', 'cantidad_envases']
-        
-    def get_variedad_envase(self, obj):
-        return obj.get_variedad_envase_display( )
-        
+
     
 
 

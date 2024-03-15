@@ -19,7 +19,7 @@ ESTADOS_MP = (
     )
 
 ESTADOSGUIARECEPCION_MP = (
-    ('1','Guia Creada, Esperando CC     '),
+    ('1','Guia Creada, Esperando CC'),
     ('2','Guia En Proceso'),
     ('3','Guia Completada, esperando Tara'),
     ('4','Guia Cerrada'),
