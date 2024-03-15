@@ -9,3 +9,4 @@ from django.dispatch import receiver
 def crear_cc_y_vincular_a_recepcionmp(sender, instance, created, **kwargs):
     if created and instance:
         CCRecepcionMateriaPrima.objects.update_or_create(recepcionmp = instance)
+        
