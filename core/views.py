@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import *
 from .serializers import *
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -71,10 +71,10 @@ class CamionViewSet(viewsets.ModelViewSet):
 
     queryset = Camion.objects.all()
     serializer_class = CamionSerializer
-    permission_classes = [IsAuthenticated]
-    
+    # permission_classes = [IsAuthenticated]
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserAPIView(generics.RetrieveAPIView):
     queryset = User.objects.all()
+    lookup_field = 'id'
+    http_method_names = ['get']
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]

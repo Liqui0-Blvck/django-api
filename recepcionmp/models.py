@@ -74,7 +74,7 @@ class RecepcionMp(ModeloBaseHistorico):
         
         constraints = [
             models.UniqueConstraint(name='%(app_label)s_%(class)s_unique_relationships',
-                                    fields=['numero_lote', 'fecha_creacion'])
+                                    fields=['   numero_lote', 'fecha_creacion'])
         ]
 
     def __str__(self):

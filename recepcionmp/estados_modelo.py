@@ -16,11 +16,13 @@ ESTADOS_MP = (
     ('6','MP Recepcion Completada'),
     ('7','Lote Procesado'),
  
-)
+    )
+
 ESTADOSGUIARECEPCION_MP = (
-    ('1','Guia Creada, esperando Lotes'),
-    ('2','Guia Completada, esperando Tara'),
-    ('3','Guia Cerrada'),
+    ('1','Guia Creada, Esperando CC'),
+    ('2','Guia En Proceso'),
+    ('3','Guia Completada, esperando Tara'),
+    ('4','Guia Cerrada'),
 
 )
 
@@ -98,7 +100,7 @@ VARIEDADES_MP = (
 ('SL','Solano'),
 ('MO','Mono'),
 ('CM','Carmel'),
-('RB','Ruby'),
+('RB','Ruby'),  
 ('PR','Price'),
 ('WC','Wood Colony'),
 ('TK','Tokio'),
