@@ -11,9 +11,7 @@ import json
 
 class GuiaRecepcionMPViewSet(viewsets.ModelViewSet):
     queryset = GuiaRecepcionMP.objects.all()
-    #serializer_class = GuiaRecepcionMPSerializer
     http_method_names = ['get', 'post', 'patch', 'delete']
-    # permission_classes = [IsAuthenticated, ]
     
     def get_serializer_class(self):        
         if self.action in ["create", "update", "partial_update", "destroy"]:
@@ -28,8 +26,6 @@ class GuiaRecepcionMPViewSet(viewsets.ModelViewSet):
     
 class RecepcionMpViewSet(viewsets.ModelViewSet):
     queryset = RecepcionMp.objects.all()
-    #serializer_class = RecepcionMpSerializer
-    # permission_classes = [IsAuthenticated, ]
     http_method_names = ['get', 'post', 'patch', 'delete']
     
     def get_serializer_class(self):        
@@ -75,22 +71,30 @@ class EnvasesMpViewSet(viewsets.ModelViewSet):
 
     queryset = EnvasesMp.objects.all()
     serializer_class = EnvasesMpSerializer
-    # permission_classes = [IsAuthenticated, ]
 
 class EnvasesGuiaMPViewSet(viewsets.ModelViewSet):
     queryset = EnvasesGuiaRecepcionMp.objects.all()
     
     def get_serializer_class(self): 
-        return EnvasesGuiaRecepcionSerializer
+        return EnvasesGuiaRecepcionSerializer   
     
     def create(self, request, *args, **kwargs):
         envase_guia = request.data.get('envases', '[]')
         envases = json.loads(envase_guia)
+        envase_ids_in_request = [envase.get('envase') for envase in envases]
+        envase_instance = EnvasesGuiaRecepcionMp.objects.filter(envase__in=envase_ids_in_request)
+        envase_instance_list = set(envase_instance.values_list('id', flat=True))
+        
+        
         for envase in envases:
+            recepcionmp = RecepcionMp.objects.get(pk=envase['recepcionmp'])
+            envases_en_recepcionmp = recepcionmp.envasesguiarecepcionmp_set.filter(recepcionmp=envase['recepcionmp'])
+            envases_en_recepcionmp_list = set(envases_en_recepcionmp.values_list('id', flat=True))
+            eliminables =  set(envases_en_recepcionmp_list) - set(envase_instance_list)
+            recepcionmp.envasesguiarecepcionmp_set.filter(pk__in=eliminables).delete()
             envase_existente = EnvasesGuiaRecepcionMp.objects.filter(recepcionmp=envase['recepcionmp'], envase=envase['envase']).first()
             if envase_existente:
-                # Actualizar envase existente si es necesario
-                pass  # Aquí pondrías la lógica de actualización
+                pass
             else:
                 serializer = self.get_serializer(data=envase)
                 if serializer.is_valid():

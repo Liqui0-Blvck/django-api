@@ -57,9 +57,16 @@ class DetalleGuiaRecepcionMPSerializer(serializers.ModelSerializer):
 
 
 class EnvasesGuiaRecepcionMpSerializer(serializers.ModelSerializer):
+    variedad_envase = serializers.SerializerMethodField()
+    
     class Meta:
         model = EnvasesGuiaRecepcionMp
         fields = ['envase', 'variedad', 'tipo_producto', 'cantidad_envases']
+        
+    def get_variedad_envase(self, obj):
+        return obj.get_variedad_envase_display( )
+        
+    
 
 
 
@@ -75,6 +82,8 @@ class EnvasesMpSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnvasesMp
         fields = '__all__'
+    
+
         
         
 class EstadoRecepcionUpdateSerializer(serializers.ModelSerializer):
