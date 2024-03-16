@@ -46,11 +46,11 @@ class GuiaRecepcionMP(ModeloBase):
         return "%s %s "% (self.pk, self.productor)
 
 def validate_unique_relationships(instance):
-    if instance.numero_lote and instance.fecha_creacion__year:
+    if instance.numero_lote and instance.fecha_creacion:
         # Check if there's another object with the same numero_lote and year of fecha_creacion
         if instance.__class__.objects.filter(numero_lote=instance.numero_lote,
-                                              fecha_creacion__year=instance.fecha_creacion__year).exists():
-            raise IntegrityError('There is already an object with the same numero_lote and year of fecha_creacion.')
+                                              fecha_creacion__year=instance.fecha_creacion.year).exists():
+            raise IntegrityError(f'Ya existe un Lote registrado con el N° {instance.numero_lote} en la Recepción MP {instance.fecha_creacion.year}, revise y corrija para guardar')
 
 
 
@@ -74,7 +74,7 @@ class RecepcionMp(ModeloBaseHistorico):
         
         constraints = [
             models.UniqueConstraint(name='%(app_label)s_%(class)s_unique_relationships',
-                                    fields=['   numero_lote', 'fecha_creacion'])
+                                    fields=['numero_lote', 'fecha_creacion'])
         ]
 
     def __str__(self):
