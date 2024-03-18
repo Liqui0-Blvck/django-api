@@ -32,7 +32,7 @@ class PatioTechadoExterior(ModeloBaseHistorico):
     id_recepcion            = models.PositiveIntegerField()
     lote_recepcionado       = GenericForeignKey('tipo_recepcion', 'id_recepcion')
     ubicacion               = models.CharField(choices=UBICACION_PATIO_TECHADO_EXT, max_length=1, default='0')
-    registrado_por          = models.ForeignKey("auth.User", on_delete=models.CASCADE, blank= True)
+    registrado_por          = models.ForeignKey("auth.User", on_delete=models.CASCADE, blank= True, null=True)
     estado_lote             = models.CharField(choices=ESTADO_GUIA_PATIO_EXT, max_length=1, default='1')
     envases                 = models.ManyToManyField('self', through='bodegas.EnvasesPatioTechadoExt')
     procesado               = models.BooleanField(default=False)
