@@ -23,19 +23,18 @@ class EnvasesMp(models.Model):
 
     
 class GuiaRecepcionMP(ModeloBase):
-    creado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
-    comercializador  = models.ForeignKey("comercializador.Comercializador", on_delete=models.CASCADE,blank=True, null= True)     
     productor = models.ForeignKey("productores.Productor", on_delete=models.CASCADE)   
     camionero = models.ForeignKey("core.Chofer", on_delete=models.CASCADE)
     camion = models.ForeignKey("core.Camion", on_delete=models.CASCADE)  
+    creado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
+    comercializador  = models.ForeignKey("comercializador.Comercializador", on_delete=models.CASCADE,blank=True, null= True)     
     lotesrecepcionmp = models.ManyToManyField('self', through='recepcionmp.RecepcionMp')
     estado_recepcion = models.CharField(choices=ESTADOSGUIARECEPCION_MP, max_length=1, default='1')
+    numero_guia_productor = models.PositiveIntegerField(null=True, blank=True)   
     mezcla_variedades = models.BooleanField(default=False)
     cierre_guia = models.BooleanField(default=False)
-    tara_camion_1 = models.FloatField(null=True, blank=True, default=0)
-    tara_camion_2 = models.FloatField(null=True, blank=True, default=0)
     terminar_guia = models.BooleanField(default=False)
-    numero_guia_productor = models.PositiveIntegerField(null=True, blank=True)    
+     
     
     class Meta:
         verbose_name = ('1.0 Guias Recepcion MP')
@@ -46,11 +45,10 @@ class GuiaRecepcionMP(ModeloBase):
         return "%s %s "% (self.pk, self.productor)
 
 def validate_unique_relationships(instance):
-    if instance.numero_lote and instance.fecha_creacion__year:
+    if instance.numero_lote and instance.fecha_creacion:
         # Check if there's another object with the same numero_lote and year of fecha_creacion
-        if instance.__class__.objects.filter(numero_lote=instance.numero_lote,
-                                              fecha_creacion__year=instance.fecha_creacion__year).exists():
-            raise IntegrityError('There is already an object with the same numero_lote and year of fecha_creacion.')
+        if instance.__class__.objects.filter(numero_lote=instance.numero_lote, fecha_creacion__year=instance.fecha_creacion.year).exists():
+           raise IntegrityError(f'Ya existe un Lote registrado con el N° {instance.numero_lote} en la Recepción MP {instance.fecha_creacion.year}, revise y corrija para guardar')
 
 
 
@@ -63,18 +61,18 @@ class RecepcionMp(ModeloBaseHistorico):
     envases = models.ManyToManyField("recepcionmp.EnvasesMp", through='recepcionmp.EnvasesGuiaRecepcionMp')    
     creado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     estado_recepcion = models.CharField(choices=ESTADOS_MP, max_length=1, default='1')
-    numero_lote = models.IntegerField()
+    numero_lote = models.IntegerField(unique=True)
       
     def clean(self):
         validate_unique_relationships(self)
     
     class Meta:
-        verbose_name = ('1.1 Lote de Guia Recepción MP')
+        verbose_name = ('1.1 Lote Recepción MP')
         verbose_name_plural = ('1.1 Lotes de Recepción MP')
         
         constraints = [
             models.UniqueConstraint(name='%(app_label)s_%(class)s_unique_relationships',
-                                    fields=['   numero_lote', 'fecha_creacion'])
+                                    fields=['numero_lote', 'fecha_creacion'])
         ]
 
     def __str__(self):
@@ -86,7 +84,7 @@ class LoteRecepcionMpRechazadoPorCC(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
     rechazado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     resultado_rechazo = models.CharField(max_length=1, choices=RESULTADO_RECHAZO, default='0')
-    historia = Historia()    
+    historia = Historia()
     
     
     class Meta:
@@ -105,8 +103,8 @@ class EnvasesGuiaRecepcionMp(models.Model):
     cantidad_envases = models.IntegerField()
     class Meta:
 
-        verbose_name = ('1.3 Envase vinculado a Recepcion MP')
-        verbose_name_plural = ('1.3 Envases en Guia Recepcion Materia Prima')
+        verbose_name = ('1.3 Envase de la Recepcion MP')
+        verbose_name_plural = ('1.3 Envases del Lote RecepcionMP')
     
 ############################### FIN MODELO RECEPCION MATERIA PRIMA ##############################  
 

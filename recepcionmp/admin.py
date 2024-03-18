@@ -13,7 +13,7 @@ class EnvasesGuiaRecepcionMpInline(admin.TabularInline):
 
 @admin.register(RecepcionMp)
 class RecepcionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'guiarecepcion', 'creado_por')
+    list_display = ('numero_lote', 'guiarecepcion', 'estado_recepcion','creado_por')
     inlines = [EnvasesGuiaRecepcionMpInline]
 
 @admin.register(GuiaRecepcionMP)
@@ -26,8 +26,7 @@ class GuiaRecepcionAdmin(admin.ModelAdmin):
 @admin.register(EnvasesGuiaRecepcionMp)
 
 class EnvasesMpAdmin(admin.ModelAdmin):
-
-    list_display = ('id',)
+    list_display = ('recepcionmp', 'envase', 'cantidad_envases','variedad',)
     
  
 
