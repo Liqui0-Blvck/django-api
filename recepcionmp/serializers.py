@@ -11,7 +11,14 @@ class RecepcionMpSerializer(serializers.ModelSerializer):
     envases = EnvasesGuiaRecepcionSerializer(many=True, read_only=True, source='envasesguiarecepcionmp_set')
     class Meta:
         model = RecepcionMp
+        fields = ['envases', 'creado_por', 'guiarecepcion', 'kilos_brutos_1', 'kilos_brutos_2', 'kilos_tara_1', 'kilos_tara_2', 'estado_recepcion',  'id']
+
+class RecepcionListMpSerializer(serializers.ModelSerializer):
+    envases = EnvasesGuiaRecepcionSerializer(many=True, read_only=True, source='envasesguiarecepcionmp_set')
+    class Meta:
+        model = RecepcionMp
         fields = '__all__'
+
 
 class GuiaRecepcionMPSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,7 +26,7 @@ class GuiaRecepcionMPSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DetalleGuiaRecepcionMPSerializer(serializers.ModelSerializer):
-    lotesrecepcionmp =RecepcionMpSerializer(many=True, read_only=True, source='recepcionmp_set')
+    lotesrecepcionmp =RecepcionListMpSerializer(many=True, read_only=True, source='recepcionmp_set')
     nombre_camion = serializers.SerializerMethodField()
     nombre_camionero = serializers.SerializerMethodField()
     estado_recepcion_label = serializers.SerializerMethodField()
@@ -79,6 +86,11 @@ class EnvasesMpSerializer(serializers.ModelSerializer):
         model = EnvasesMp
         fields = '__all__'
     
+
+class LoteRechazadoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LoteRecepcionMpRechazadoPorCC
+        fields = '__all__'
 
         
         

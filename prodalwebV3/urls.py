@@ -21,6 +21,7 @@ urlpatterns = [
     path('api/', include('core.urls', namespace='core')),
     path('api/', include('comunas.urls')),
     path('api/', include('comercializador.urls')),
-    path('api/', include('controlcalidad.urls'))
+    path('api/', include('controlcalidad.urls')),
+    path('api/', include('bodegas.urls'))
     
 ]

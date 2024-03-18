@@ -36,15 +36,17 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, recepcionmp_pk=None, pk=None):
         guiarecepcion = GuiaRecepcionMP.objects.get(pk=recepcionmp_pk)
         queryset = RecepcionMp.objects.get(guiarecepcion=guiarecepcion, pk=pk)
-        serializer = RecepcionMpSerializer(queryset)
+        serializer = RecepcionListMpSerializer(queryset)
         return Response(serializer.data)
     
     def create(self, request, recepcionmp_pk=None, *args, **kwargs):
         lotes_request = request.data.get('lotes', '[]')
         lotes = json.loads(lotes_request)
-
+        
+        
         for lote in lotes:
             serializer = self.get_serializer(data=lote)
+            
             if serializer.is_valid():
                 serializer.save()
             envases_request = request.data.get('envases', '[]')
@@ -108,7 +110,14 @@ class EstadoRecepcionUpdateAPIView(generics.UpdateAPIView):
     queryset = RecepcionMp.objects.all()
     serializer_class = EstadoRecepcionUpdateSerializer
     
+    
+    
 class EstadoGuiaRecepcionUpdateAPIView(generics.UpdateAPIView):
     lookup_field = 'id'
     queryset = GuiaRecepcionMP.objects.all()
     serializer_class = EstadoGuiaRecepcionUpdateSerializer
+    
+    
+class LoteRechazadoViewset(viewsets.ModelViewSet):
+    queryset = LoteRecepcionMpRechazadoPorCC.objects.all()
+    serializer_class = LoteRechazadoSerializer

@@ -61,19 +61,20 @@ class RecepcionMp(ModeloBaseHistorico):
     envases = models.ManyToManyField("recepcionmp.EnvasesMp", through='recepcionmp.EnvasesGuiaRecepcionMp')    
     creado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     estado_recepcion = models.CharField(choices=ESTADOS_MP, max_length=1, default='1')
-    numero_lote = models.IntegerField(unique=True)
+    numero_lote = models.CharField(max_length=10, unique=True, blank=True)
       
     def clean(self):
         validate_unique_relationships(self)
+        
     
     class Meta:
         verbose_name = ('1.1 Lote Recepción MP')
         verbose_name_plural = ('1.1 Lotes de Recepción MP')
         
-        constraints = [
-            models.UniqueConstraint(name='%(app_label)s_%(class)s_unique_relationships',
-                                    fields=['numero_lote', 'fecha_creacion'])
-        ]
+        # constraints = [
+        #     models.UniqueConstraint(name='%(app_label)s_%(class)s_unique_relationships',
+        #                             fields=['numero_lote', 'fecha_creacion'])
+        # ]
 
     def __str__(self):
         return "Lote N° %s"% (self.pk)
