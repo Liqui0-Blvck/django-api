@@ -14,7 +14,7 @@ class CCGuiaInternaViewset(viewsets.ModelViewSet):
   
 
 class PatioTechadoExteriorViewset(viewsets.ModelViewSet):
-  search_fields = ['cc_guia__id']
+  search_fields = ['id_recepcion']
   filter_backends = (filters.SearchFilter, )
   queryset = PatioTechadoExterior.objects.all()
   serializer_class = PatioTechadoExteriorSerializer

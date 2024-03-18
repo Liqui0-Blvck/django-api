@@ -69,9 +69,6 @@ class EnvasesGuiaRecepcionMpSerializer(serializers.ModelSerializer):
         model = EnvasesGuiaRecepcionMp
         fields = ['envase', 'variedad', 'tipo_producto', 'cantidad_envases']
 
-    
-
-
 
 class DetalleRecepcionMpSerializer(serializers.ModelSerializer):
     envases = EnvasesGuiaRecepcionMpSerializer(many=True, read_only=True, source='envasesguiarecepcionmp_set')
@@ -88,9 +85,13 @@ class EnvasesMpSerializer(serializers.ModelSerializer):
     
 
 class LoteRechazadoSerializer(serializers.ModelSerializer):
+    resultado_rechazo = serializers.SerializerMethodField()
     class Meta:
         model = LoteRecepcionMpRechazadoPorCC
         fields = '__all__'
+        
+    def get_resultado_rechazo(self, obj):
+        return obj.get_resultado_rechazo_display()
 
         
         

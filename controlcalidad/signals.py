@@ -21,13 +21,16 @@ def comprueba_si_aprueba_cc_por_humedad_recepcionmp(sender, instance, created, *
             guiapatioexterior = PatioTechadoExterior.objects.update_or_create(cc_guia=guiacdcpation, tipo_recepcion=ctrecepcionmp, id_recepcion=recepcionmp.pk, )
             print(f'Guia de Ingreso a Patio Techado Registrada con el N° {guiapatioexterior[0].pk}')
             if not recepcionmp.guiarecepcion.mezcla_variedades:
-                GuiaRecepcionMP.objects.filter(pk=instance.recepcionmp.guiarecepcion.pk).update(estado_recepcion='4')
+                GuiaRecepcionMP.objects.filter(pk=instance.recepcionmp.guiarecepcion.pk).update(estado_recepcion='3')
             else:
-                GuiaRecepcionMP.objects.filter(pk=instance.recepcionmp.guiarecepcion.pk).update(estado_recepcion='2')
+                GuiaRecepcionMP.objects.filter(pk=instance.recepcionmp.guiarecepcion.pk).update(estado_recepcion='2')   
             
         else:
             CCRecepcionMateriaPrima.objects.filter(pk=instance.pk).update(estado_cc='0')
             RecepcionMp.objects.filter(pk=instance.recepcionmp.pk).update(estado_recepcion='4')
-            LoteRecepcionMpRechazadoPorCC.objects.create(recepcionmp=instance.recepcionmp, rechazado_por=instance.cc_registrado_por)
+            LoteRecepcionMpRechazadoPorCC.objects.create(
+                recepcionmp=instance.recepcionmp, 
+                rechazado_por=instance.cc_registrado_por
+                )
             GuiaRecepcionMP.objects.filter(pk=instance.recepcionmp.guiarecepcion.pk).update(estado_recepcion='4')
     #     
