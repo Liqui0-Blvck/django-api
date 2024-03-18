@@ -86,7 +86,11 @@ class EstadoRecepcionUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecepcionMp
         fields = ['estado_recepcion']
-        
+
+class EstadoGuiaRecepcionUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GuiaRecepcionMP
+        fields = ['estado_recepcion']
 
 
 

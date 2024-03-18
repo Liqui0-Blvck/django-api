@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
     search_fields = ['recepcionmp__id']
     filter_backends = (filters.SearchFilter, )
-    queryset = CCRecepcionMateriaPrima.objects.all()
+    queryset = CCRecepcionMateriaPrima.objects.all()    
     #serializer_class = CCRecepcionMateriaPrimaSerializer
     permission_classes = [IsAuthenticated,]
     
@@ -29,6 +29,7 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
         user = request.user
         request_data = {'cc_registrado_por': user.id, **request.data}
         datos_front = request.data
+        print(datos_front)
         serializer = self.get_serializer(data=request_data)
         if serializer.is_valid():
             control_existente = CCRecepcionMateriaPrima.objects.get(recepcionmp = datos_front['recepcionmp'])

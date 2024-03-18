@@ -107,3 +107,8 @@ class EstadoRecepcionUpdateAPIView(generics.UpdateAPIView):
     lookup_field = 'id'
     queryset = RecepcionMp.objects.all()
     serializer_class = EstadoRecepcionUpdateSerializer
+    
+class EstadoGuiaRecepcionUpdateAPIView(generics.UpdateAPIView):
+    lookup_field = 'id'
+    queryset = GuiaRecepcionMP.objects.all()
+    serializer_class = EstadoGuiaRecepcionUpdateSerializer
