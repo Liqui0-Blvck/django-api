@@ -1,7 +1,18 @@
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
+
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'password']
+        
+    def validate_password(self, value: str) -> str:
+        return make_password(value)
 
 class OperarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,6 +48,7 @@ class EtiquetasZplSerializer(serializers.ModelSerializer):
 
 
 class PerfilSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     class Meta:
         model = Perfil
         fields = '__all__'
@@ -55,8 +67,4 @@ class ChoferSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'username']
-        # fields = '__all__'    
+
