@@ -12,6 +12,11 @@ class CCGuiaInternaViewset(viewsets.ModelViewSet):
   queryset = CCGuiaInterna.objects.all()
   serializer_class = CCGuiaInternaSerializer
   
+class PatioTechadoExteriorUpdatedViewset(viewsets.ModelViewSet):
+  queryset = PatioTechadoExterior.objects.all()
+  serializer_class = PatioTechadoExteriorSerializer
+  
+  
 
 class PatioTechadoExteriorViewset(viewsets.ModelViewSet):
   # search_fields = ['id_recepcion']
@@ -19,14 +24,7 @@ class PatioTechadoExteriorViewset(viewsets.ModelViewSet):
   lookup_field = 'id_recepcion'
   queryset = PatioTechadoExterior.objects.all()
   serializer_class = PatioTechadoExteriorSerializer
-  
-  
-  def update(self, request, *args, **kwargs):
-    instance = self.get_object()
-    req_data = request.data
-    print(instance)
-    print(req_data)
-    return super().update(request, *args, **kwargs)
+
   
 
 class EnvasesPatioTechadoExteriorViewset(viewsets.ModelViewSet):

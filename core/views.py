@@ -11,7 +11,7 @@ class PerfilViewSet(viewsets.ModelViewSet):
     queryset = Perfil.objects.all()
     serializer_class = PerfilSerializer
     lookup_field = 'user'
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     
 class ColosoViewSet(viewsets.ModelViewSet):
 
