@@ -33,9 +33,13 @@ class DetalleCCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
         
         
 class CCRendimientoSerializer(serializers.ModelSerializer):
+    cc_recepcionmp = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = CCRendimiento
         fields = '__all__'
+        extra_kwargs = {
+            "cc_recepcionmp": {"required": False, "allow_null": False},
+        }
         
 class CCPepaSerializer(serializers.ModelSerializer):
     class Meta:

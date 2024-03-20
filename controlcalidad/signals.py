@@ -19,6 +19,7 @@ def comprueba_si_aprueba_cc_por_humedad_recepcionmp(sender, instance, created, *
             ctrecepcionmp = ContentType.objects.get_for_model(RecepcionMp)
             guiaccpatio = CCGuiaInterna.objects.update_or_create(tipo_cc_guia=ctccrecepcionmp, id_guia=instance.pk)
             guiacdcpation  = CCGuiaInterna.objects.get(pk=guiaccpatio[0].pk)
+            RecepcionMp.objects.filter(pk=recepcionmp.pk).update(estado_recepcion='3') 
             guiapatioexterior = PatioTechadoExterior.objects.update_or_create(cc_guia=guiacdcpation, tipo_recepcion=ctrecepcionmp, id_recepcion=recepcionmp.pk, )
             print(f'Guia de Ingreso a Patio Techado Registrada con el N° {guiapatioexterior[0].pk}')
             if not recepcionmp.guiarecepcion.mezcla_variedades:

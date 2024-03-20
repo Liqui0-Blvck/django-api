@@ -8,10 +8,13 @@ router = routers.SimpleRouter()
 router.register(r'control-calidad/recepcionmp', CCRecepcionMateriaPrimaViewSet)
 #router.register(r'envasesmp', EnvasesMpViewSet)
 
-# lotes_guia = routers.NestedSimpleRouter(router, r'recepcionmp', lookup='recepcionmp')
-# lotes_guia.register(r'lotes', RecepcionMpViewSet)
+muestras = routers.NestedSimpleRouter(router, r'control-calidad/recepcionmp', lookup='cc_recepcionmp')
+muestras.register(r'muestras', CCRendimientoViewSet)
+cdcpepa_muestra = routers.NestedSimpleRouter(muestras, r'muestras', lookup='cc_rendimiento')
+cdcpepa_muestra.register(r'cdcpepa', CCPepaViewSet)
 
 urlpatterns = [
     path(r'', include(router.urls)),
-    # path(r'', include(lotes_guia.urls)),
+    path(r'', include(muestras.urls)),
+    path(r'', include(cdcpepa_muestra.urls)),
 ]

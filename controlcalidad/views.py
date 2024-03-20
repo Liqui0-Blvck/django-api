@@ -55,3 +55,63 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
     def total_guias_cc_recepcion_pendientes(self, request):
         total_guias_cc_pendientes = CCRecepcionMateriaPrima.objects.filter(estado_cc="2").count()
         return Response(total_guias_cc_pendientes)
+
+    @action(detail=True, methods=['POST'])
+    def registra_muestra_lote(self, request, pk=None):
+        ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=pk)
+        serializadorcdr = CCRendimientoSerializer(data=request.data)
+        serializadorcdr.is_valid(raise_exception=True)
+        serializadorcdr.save(cc_recepcionmp=ccrecep)
+        return Response(serializadorcdr.data, status=status.HTTP_201_CREATED)
+    
+
+    @action(detail=True, methods=['GET'])
+    def lista_muestra_lote(self, request, pk=None):
+        ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=pk)
+        listamuestras = get_list_or_404(CCRendimiento, cc_recepcionmp=ccrecep)
+        serializer = CCRendimientoSerializer(listamuestras, many=True)
+        return Response(serializer.data)
+    
+
+class CCRendimientoViewSet(viewsets.ModelViewSet):
+    queryset = CCRendimiento.objects.all()
+    serializer_class = CCRendimientoSerializer
+    permission_classes = [IsAuthenticated,]
+    
+    def retrieve(self, request,cc_recepcionmp_pk=None , pk=None):
+        ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=cc_recepcionmp_pk)
+        ccrendimiento = get_object_or_404(CCRendimiento, pk=pk, cc_recepcionmp=ccrecep)
+        serializer = self.get_serializer(ccrendimiento)
+        return Response(serializer.data)
+    
+    def list(self, request, cc_recepcionmp_pk=None):
+        queryset = self.queryset.filter(cc_recepcionmp=cc_recepcionmp_pk)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+class CCPepaViewSet(viewsets.ModelViewSet):
+    queryset = CCPepa.objects.all()
+    serializer_class = CCPepaSerializer
+    permission_classes = [IsAuthenticated,]
+    
+    def create(self, request, *args, **kwargs):
+        print(self.kwargs)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ccrend = get_object_or_404(CCRendimiento, pk=self.kwargs['cc_rendimiento_pk'])
+        serializer.save(cc_rendimiento=ccrend)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request,cc_recepcionmp_pk=None,cc_rendimiento_pk=None, pk=None):
+        # print(self.kwargs)
+        ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=cc_recepcionmp_pk)
+        ccrendimiento = get_object_or_404(CCRendimiento, pk=cc_rendimiento_pk, cc_recepcionmp=ccrecep)
+        ccpepa = get_object_or_404(CCPepa, pk=pk, cc_rendimiento=ccrendimiento)
+        serializer = self.get_serializer(ccpepa)
+        return Response(serializer.data)
+    
+    # def list(self, request, cc_recepcionmp_pk=None):
+    #     queryset = self.queryset.filter(cc_recepcionmp=cc_recepcionmp_pk)
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
+
