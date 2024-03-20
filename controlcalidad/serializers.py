@@ -32,5 +32,15 @@ class DetalleCCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
         
-
+class CCRendimientoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CCRendimiento
+        fields = '__all__'
+        
+class CCPepaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CCPepa
+        fields = '__all__'
+        
+        
 
