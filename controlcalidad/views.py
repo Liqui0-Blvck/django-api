@@ -103,15 +103,8 @@ class CCPepaViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request,cc_recepcionmp_pk=None,cc_rendimiento_pk=None, pk=None):
-        # print(self.kwargs)
         ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=cc_recepcionmp_pk)
         ccrendimiento = get_object_or_404(CCRendimiento, pk=cc_rendimiento_pk, cc_recepcionmp=ccrecep)
         ccpepa = get_object_or_404(CCPepa, pk=pk, cc_rendimiento=ccrendimiento)
         serializer = self.get_serializer(ccpepa)
         return Response(serializer.data)
-    
-    # def list(self, request, cc_recepcionmp_pk=None):
-    #     queryset = self.queryset.filter(cc_recepcionmp=cc_recepcionmp_pk)
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return Response(serializer.data)
-
