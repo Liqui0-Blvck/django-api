@@ -40,11 +40,11 @@ class Perfil(ModeloBase):
     sexo = models.CharField(max_length=1, choices=SEXO_CHOICES, default='O')
     direccion = models.CharField(max_length=60, null=True, blank=True)
     comuna = models.CharField(max_length=30, null=True, blank=True)
-    telefono = models.CharField(max_length=20, null=True, blank=True)
     celular = models.CharField(max_length=20,null=True, blank=True)
     fnacimiento = models.DateField(blank=True, null=True, verbose_name='Fecha nacimiento')
     valoracion = models.IntegerField(default=0, blank=True)
     fotoperfil = models.ImageField(upload_to=user_directory_path, blank=True, verbose_name='Foto Perfil', default='default.png')
+    cargos = models.ManyToManyField('self', through='CargoPerfil')
 
     class Meta:
         verbose_name = ('Perfil Usuario')
@@ -53,6 +53,12 @@ class Perfil(ModeloBase):
 
     def __str__(self):
         return 'Perfil del usuario %s' % self.user
+    
+
+class CargoPerfil(ModeloBase):
+    perfil = models.ForeignKey('core.perfil', on_delete=models.CASCADE)
+    cargo = models.CharField(max_length=1, choices = CARGOS_PERFILES,  blank=True)
+    
 
 
 class CambioEstiloSitio(models.Model):

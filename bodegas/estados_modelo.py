@@ -380,7 +380,6 @@ ESTADO_PROGRAMA_SELECCION = (
 )
 
 ESTADO_GUIA_PATIO_EXT = (
-   
     ('1','Creada'),
     ('2','Asignando Ubicaciones'),
     ('3','Ubicacion Asignada'),

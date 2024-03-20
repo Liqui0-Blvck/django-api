@@ -12,6 +12,8 @@ router.register(r'tractores', TractorViewSet)
 router.register(r'etiquetas-zpl', EtiquetasZplViewSet)
 router.register(r'choferes', ChoferViewSet)
 router.register(r'camiones', CamionViewSet)
+router.register(r'cargo-perfil', CargoPerfilViewSet)
+
 
 tractor_coloso = routers.NestedSimpleRouter(router, r'tractores', lookup='tractores')
 tractor_coloso.register(r'coloso-tractor', TractorColosoViewSet)

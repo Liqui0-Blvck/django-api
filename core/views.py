@@ -8,10 +8,10 @@ from rest_framework import status
 
 
 class PerfilViewSet(viewsets.ModelViewSet):
-
     queryset = Perfil.objects.all()
     serializer_class = PerfilSerializer
-    permission_classes = [IsAuthenticated]
+    lookup_field = 'user'
+    # permission_classes = [IsAuthenticated]
     
 class ColosoViewSet(viewsets.ModelViewSet):
 
@@ -78,3 +78,9 @@ class UserAPIView(generics.RetrieveAPIView):
     lookup_field = 'id'
     http_method_names = ['get']
     serializer_class = UserSerializer
+
+
+
+class CargoPerfilViewSet(viewsets.ModelViewSet):
+    queryset = CargoPerfil.objects.all()
+    serializer_class = CargoPerfilSerializer

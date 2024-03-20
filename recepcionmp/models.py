@@ -61,10 +61,11 @@ class RecepcionMp(ModeloBaseHistorico):
     envases = models.ManyToManyField("recepcionmp.EnvasesMp", through='recepcionmp.EnvasesGuiaRecepcionMp')    
     creado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     estado_recepcion = models.CharField(choices=ESTADOS_MP, max_length=1, default='1')
-    numero_lote = models.IntegerField(unique=True)
+    numero_lote = models.IntegerField(default=0, null=True)
       
     def clean(self):
         validate_unique_relationships(self)
+        
     
     class Meta:
         verbose_name = ('1.1 Lote Recepción MP')
@@ -84,6 +85,7 @@ class LoteRecepcionMpRechazadoPorCC(models.Model):
     fecha_modificacion = models.DateTimeField(auto_now=True)
     rechazado_por = models.ForeignKey("auth.User", on_delete=models.CASCADE, null=True)
     resultado_rechazo = models.CharField(max_length=1, choices=RESULTADO_RECHAZO, default='0')
+    numero_lote_rechazado = models.IntegerField(default=0)
     historia = Historia()
     
     

@@ -12,9 +12,16 @@ class ImportacionDeGrupos(ImportExportModelAdmin):
     pass 
 admin.site.register(Group, ImportacionDeGrupos)
 
+@admin.register(User)
 class ImportacionDeUsuarios(ImportExportModelAdmin):
-    pass 
-admin.site.register(User, ImportacionDeUsuarios)
+    list_display = ('id','username', 'first_name', 'last_name', 'is_active', 'is_staff')
+
+
+
+
+class PerfilesDeUsuarios(ImportExportModelAdmin):
+    pass
+admin.site.register(Perfil, PerfilesDeUsuarios)
 
 @admin.register(CambioEstiloSitio)
 class CambioEstiloSitioAdmin(admin.ModelAdmin):
@@ -61,10 +68,10 @@ class UserChangeForm(forms.ModelForm):
 
 
 
-@admin.register(Perfil)
-class PerfilAdmin(admin.ModelAdmin):
-    list_display = ['user', 'sexo', 'direccion', 'comuna',
-    'telefono', 'celular', 'fnacimiento', 'valoracion', 'fotoperfil']
+# @admin.register(Perfil)
+# class PerfilAdmin(admin.ModelAdmin):
+#     list_display = ['user', 'sexo', 'direccion', 'comuna',
+#     'telefono', 'celular', 'fnacimiento', 'valoracion', 'fotoperfil']
 
 
 @admin.register(Operario)

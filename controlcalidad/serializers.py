@@ -11,7 +11,7 @@ class CCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
 
 class DetalleCCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
     estado_aprobacion_cc = serializers.SerializerMethodField()
-    estado_cc = serializers.SerializerMethodField()
+    estado_cc_label = serializers.SerializerMethodField()
     presencia_insectos_selected = serializers.SerializerMethodField()
     
     def get_presencia_insectos_selected(self, obj):
@@ -20,7 +20,7 @@ class DetalleCCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
         else:
             return "No"
     
-    def get_estado_cc(self, obj):
+    def get_estado_cc_label(self, obj):
         return obj.get_estado_cc_display()
         
     
