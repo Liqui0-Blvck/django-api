@@ -7,6 +7,8 @@ from import_export.admin import ImportExportModelAdmin
 
 admin.site.unregister(Group)
 admin.site.unregister(User)
+admin.site.register(Chofer)
+admin.site.register(Camion)
 
 class ImportacionDeGrupos(ImportExportModelAdmin):
     pass 
