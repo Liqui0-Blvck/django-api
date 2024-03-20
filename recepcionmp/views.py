@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework import viewsets, generics
 from .models import *
 from .serializers import *
@@ -11,7 +11,7 @@ import json
 
 class GuiaRecepcionMPViewSet(viewsets.ModelViewSet):
     queryset = GuiaRecepcionMP.objects.all()
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [IsAuthenticated,]
     
     def get_serializer_class(self):        
         if self.action in ["create", "update", "partial_update", "destroy"]:
@@ -26,7 +26,7 @@ class GuiaRecepcionMPViewSet(viewsets.ModelViewSet):
     
 class RecepcionMpViewSet(viewsets.ModelViewSet):
     queryset = RecepcionMp.objects.all()
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [IsAuthenticated,]
     
     def get_serializer_class(self):        
         if self.action in ["create", "update", "partial_update", "destroy"]:
@@ -34,7 +34,7 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
         return DetalleRecepcionMpSerializer
     
     def retrieve(self, request, recepcionmp_pk=None, pk=None):
-        guiarecepcion = GuiaRecepcionMP.objects.get(pk=recepcionmp_pk)
+        guiarecepcion = get_object_or_404(GuiaRecepcionMP, pk=recepcionmp_pk)
         queryset = RecepcionMp.objects.get(guiarecepcion=guiarecepcion, pk=pk)
         serializer = RecepcionListMpSerializer(queryset)
         return Response(serializer.data)
@@ -55,12 +55,13 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
     
     
 class EnvasesMpViewSet(viewsets.ModelViewSet):
-
     queryset = EnvasesMp.objects.all()
     serializer_class = EnvasesMpSerializer
+    permission_classes = [IsAuthenticated,]
 
 class EnvasesGuiaMPViewSet(viewsets.ModelViewSet):
     queryset = EnvasesGuiaRecepcionMp.objects.all()
+    permission_classes = [IsAuthenticated,]
     
     def get_serializer_class(self): 
         return EnvasesGuiaRecepcionSerializer   
@@ -97,6 +98,8 @@ class EstadoRecepcionUpdateAPIView(generics.UpdateAPIView):
     lookup_field = 'id'
     queryset = RecepcionMp.objects.all()
     serializer_class = EstadoRecepcionUpdateSerializer
+    permission_classes = [IsAuthenticated,]
+
     
     
     
@@ -104,8 +107,9 @@ class EstadoGuiaRecepcionUpdateAPIView(generics.UpdateAPIView):
     lookup_field = 'id'
     queryset = GuiaRecepcionMP.objects.all()
     serializer_class = EstadoGuiaRecepcionUpdateSerializer
-    
+    permission_classes = [IsAuthenticated,]
     
 class LoteRechazadoViewset(viewsets.ModelViewSet):
     queryset = LoteRecepcionMpRechazadoPorCC.objects.all()
     serializer_class = LoteRechazadoSerializer  
+    permission_classes = [IsAuthenticated,]

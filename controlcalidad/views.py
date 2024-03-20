@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, get_list_or_404
 from .serializers import *
 from .models import *
 from rest_framework import viewsets, filters, status
@@ -21,7 +21,7 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
         return DetalleCCRecepcionMateriaPrimaSerializer
     
     def retrieve(self, request, pk=None):
-        ccrecepcionmp = CCRecepcionMateriaPrima.objects.get(pk=pk)
+        ccrecepcionmp = get_object_or_404(CCRecepcionMateriaPrima, pk=pk)
         serializer = self.get_serializer(ccrecepcionmp)
         return Response(serializer.data)
     
