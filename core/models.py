@@ -44,7 +44,7 @@ class Perfil(ModeloBase):
     fnacimiento = models.DateField(blank=True, null=True, verbose_name='Fecha nacimiento')
     valoracion = models.IntegerField(default=0, blank=True)
     fotoperfil = models.ImageField(upload_to=user_directory_path, blank=True, verbose_name='Foto Perfil', default='default.png')
-    area = models.CharField(max_length=255)
+    cargos = models.ManyToManyField('self', through='CargoPerfil')
 
     class Meta:
         verbose_name = ('Perfil Usuario')
@@ -53,6 +53,12 @@ class Perfil(ModeloBase):
 
     def __str__(self):
         return 'Perfil del usuario %s' % self.user
+    
+
+class CargoPerfil(ModeloBase):
+    perfil = models.ForeignKey('core.perfil', on_delete=models.CASCADE)
+    cargo = models.CharField(max_length=1, choices = CARGOS_PERFILES,  blank=True)
+    
 
 
 class CambioEstiloSitio(models.Model):

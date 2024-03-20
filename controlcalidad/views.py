@@ -26,17 +26,18 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def update(self, request, *args, **kwargs):
-        user = request.user
-        request_data = {'cc_registrado_por': user.id, **request.data}
+        request_data = request.data
         datos_front = request.data
         print(datos_front)
         serializer = self.get_serializer(data=request_data)
         if serializer.is_valid():
+            usuario = User.objects.get(pk = datos_front['cc_registrado_por'])
             control_existente = CCRecepcionMateriaPrima.objects.get(recepcionmp = datos_front['recepcionmp'])
             if control_existente:
                 control_existente.humedad = datos_front['humedad']
                 control_existente.presencia_insectos = datos_front['presencia_insectos']
                 control_existente.observaciones = datos_front['observaciones']
+                control_existente.cc_registrado_por = usuario
                 control_existente.save()
             else:
                 print('creo que no deberia llegar aqui')

@@ -85,13 +85,17 @@ class EnvasesMpSerializer(serializers.ModelSerializer):
     
 
 class LoteRechazadoSerializer(serializers.ModelSerializer):
-    resultado_rechazo = serializers.SerializerMethodField()
+    resultado_rechazo_label = serializers.SerializerMethodField()
+    numero_lote = serializers.SerializerMethodField()
     class Meta:
         model = LoteRecepcionMpRechazadoPorCC
         fields = '__all__'
         
-    def get_resultado_rechazo(self, obj):
+    def get_resultado_rechazo_label(self, obj):
         return obj.get_resultado_rechazo_display()
+    
+    def get_numero_lote(self, obj): 
+        return RecepcionMp.objects.get(pk = obj.recepcionmp.id).numero_lote
 
         
         

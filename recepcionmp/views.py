@@ -40,21 +40,17 @@ class RecepcionMpViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def create(self, request, recepcionmp_pk=None, *args, **kwargs):
-        lotes_request = request.data.get('lotes', '[]')
-        lotes = json.loads(lotes_request)
+        serializer = self.get_serializer(data=request.data)
+        print(request.data)
         
-        
-        for lote in lotes:
-            serializer = self.get_serializer(data=lote)
-            
-            if serializer.is_valid():
-                serializer.save()
-            envases_request = request.data.get('envases', '[]')
-            envases = json.loads(envases_request)
-            for envase in envases:
-                serializador_envases = EnvasesGuiaRecepcionMpSerializer(data=envase)
-                if serializador_envases.is_valid():
-                    serializador_envases.save(recepcionmp = serializer.instance)
+        if serializer.is_valid():
+            serializer.save()
+        envases = request.data.get('envases', [])
+        print(envases)
+        for envase in envases:
+            serializador_envases = EnvasesGuiaRecepcionMpSerializer(data=envase)
+            if serializador_envases.is_valid():
+                serializador_envases.save(recepcionmp = serializer.instance)
         guiarecepcion = GuiaRecepcionMP.objects.get(pk=recepcionmp_pk)
         serializer.save(guiarecepcion=guiarecepcion)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -120,4 +116,4 @@ class EstadoGuiaRecepcionUpdateAPIView(generics.UpdateAPIView):
     
 class LoteRechazadoViewset(viewsets.ModelViewSet):
     queryset = LoteRecepcionMpRechazadoPorCC.objects.all()
-    serializer_class = LoteRechazadoSerializer
+    serializer_class = LoteRechazadoSerializer  
