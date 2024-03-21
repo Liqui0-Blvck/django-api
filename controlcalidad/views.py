@@ -1,3 +1,4 @@
+from http.client import METHOD_NOT_ALLOWED
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from .serializers import *
 from .models import *
@@ -94,17 +95,32 @@ class CCPepaViewSet(viewsets.ModelViewSet):
     serializer_class = CCPepaSerializer
     permission_classes = [IsAuthenticated,]
     
-    def create(self, request, *args, **kwargs):
-        print(self.kwargs)
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        ccrend = get_object_or_404(CCRendimiento, pk=self.kwargs['cc_rendimiento_pk'])
-        serializer.save(cc_rendimiento=ccrend)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    # def get_object(self):
+    #     pkccpepa = self.kwargs['pk']
+    #     cdcpepa = self.get_queryset().filter(id=pkccpepa)
+    #     print(cdcpepa)
+    #     return self.get_queryset().filter(id=pkccpepa)
+    
+    # def create(self, request, *args, **kwargs):
+    #     print(self.kwargs)
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     ccrend = get_object_or_404(CCRendimiento, pk=self.kwargs['cc_rendimiento_pk'])
+    #     serializer.save(cc_rendimiento=ccrend)
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request,cc_recepcionmp_pk=None,cc_rendimiento_pk=None, pk=None):
         ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=cc_recepcionmp_pk)
         ccrendimiento = get_object_or_404(CCRendimiento, pk=cc_rendimiento_pk, cc_recepcionmp=ccrecep)
-        ccpepa = get_object_or_404(CCPepa, pk=pk, cc_rendimiento=ccrendimiento)
+        ccpepa = get_object_or_404(CCPepa, pk=pk,cc_rendimiento=ccrendimiento)
+        serializer = self.get_serializer(ccpepa)
+        return Response(serializer.data)
+    
+    
+    def list(self, request,cc_recepcionmp_pk=None,cc_rendimiento_pk=None,):
+        ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=cc_recepcionmp_pk)
+        ccrendimiento = get_object_or_404(CCRendimiento, pk=cc_rendimiento_pk, cc_recepcionmp=ccrecep)
+        ccpepa = get_object_or_404(CCPepa, cc_rendimiento=ccrendimiento)
         serializer = self.get_serializer(ccpepa)
         return Response(serializer.data)
