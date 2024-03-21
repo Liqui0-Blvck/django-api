@@ -14,9 +14,6 @@ def fotos_cc_tarja_seleccionada(instance, filename):
     return 'controlcalidad_seleccion/{0}/tarja/{1}'.format(instance.seleccion.pk, filename)
 
 
-class FotosCC(models.Model):
-    ccrecepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.SET_NULL, blank=True, null=True)
-    imagen      = models.ImageField(upload_to=fotos_cc, blank=True, verbose_name='Fotos Control', null=True)
 
 
 class CCRecepcionMateriaPrima(models.Model):
@@ -32,6 +29,7 @@ class CCRecepcionMateriaPrima(models.Model):
     control_rendimiento = models.ManyToManyField('self', through='CCRendimiento')
     historia = Historia()
     estado_aprobacion_cc = models.CharField(max_length=1, choices=ESTADO_APROBACION_CC_X_JEFATURA, default='0')
+    fotos_cc = models.ManyToManyField('self', through='FotosCC')
     
     class Meta:
         verbose_name = ('CC Recepcion Mp')
@@ -39,6 +37,11 @@ class CCRecepcionMateriaPrima(models.Model):
 
     def __str__(self):
         return "Control Calidad Lote N° %s"% (self.recepcionmp.pk)
+
+class FotosCC(models.Model):
+    ccrecepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.CASCADE)
+    imagen = models.ImageField(upload_to=fotos_cc, blank=True, verbose_name='Fotos Control', null=True)
+
 
 
 
