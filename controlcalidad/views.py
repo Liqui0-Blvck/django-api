@@ -115,3 +115,6 @@ class CCPepaViewSet(viewsets.ModelViewSet):
     #     serializer = self.get_serializer(queryset, many=True)
     #     return Response(serializer.data)
 
+class FotosCCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
+    queryset = FotosCC.objects.all()
+    serializer_class = FotosCCRecepcionMateriaPrimaSerializer
