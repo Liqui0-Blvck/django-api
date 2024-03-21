@@ -108,15 +108,9 @@ class CCPepaViewSet(viewsets.ModelViewSet):
         ccpepa = get_object_or_404(CCPepa, pk=pk, cc_rendimiento=ccrendimiento)
         serializer = self.get_serializer(ccpepa)
         return Response(serializer.data)
-<<<<<<< HEAD
     
-    # def list(self, request, cc_recepcionmp_pk=None):
-    #     queryset = self.queryset.filter(cc_recepcionmp=cc_recepcionmp_pk)
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return Response(serializer.data)
-
 class FotosCCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
     queryset = FotosCC.objects.all()
     serializer_class = FotosCCRecepcionMateriaPrimaSerializer
-=======
->>>>>>> 4c31bc7cb468647890322acb8ffdce9d709996bb
+    permission_classes = [IsAuthenticated,]
+    
