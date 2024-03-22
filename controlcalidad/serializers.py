@@ -68,12 +68,26 @@ class DetalleCCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
         
 class CCRendimientoSerializer(serializers.ModelSerializer):
     cc_recepcionmp = serializers.PrimaryKeyRelatedField(read_only=True)
+    cc_ok = serializers.SerializerMethodField()
+    cc_calibrespepaok = serializers.SerializerMethodField()
     class Meta:
         model = CCRendimiento
         fields = '__all__'
         extra_kwargs = {
             "cc_recepcionmp": {"required": False, "allow_null": False},
         }
+    
+    def get_cc_ok(self, obj):
+        try:
+            return CCPepa.objects.get(cc_rendimiento = obj.pk, cc_pepaok = True).cc_pepaok
+        except: 
+            return 'Sin Control Pepa Registrado'
+        
+    def get_cc_calibrespepaok(self, obj):
+        try:
+            return CCPepa.objects.get(cc_rendimiento = obj.pk, cc_calibrespepaok = True).cc_pepaok
+        except: 
+            return False
         
 class CCPepaSerializer(serializers.ModelSerializer):
     class Meta:

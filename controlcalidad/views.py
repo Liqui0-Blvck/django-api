@@ -18,6 +18,7 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
     
     def get_serializer_class(self):        
         if self.action in ["create", "update", "partial_update", "destroy"]:
+            self.lookup_field = 'recepcionmp'
             return CCRecepcionMateriaPrimaSerializer
         return DetalleCCRecepcionMateriaPrimaSerializer
     
@@ -27,23 +28,25 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
     def update(self, request, *args, **kwargs):
-        request_data = request.data
+        instance = self.get_object()
         datos_front = request.data
-        print(datos_front)
-        serializer = self.get_serializer(data=request_data)
+        print(instance)
+        serializer = self.get_serializer(instance, data=datos_front)
         if serializer.is_valid():
             usuario = User.objects.get(pk = datos_front['cc_registrado_por'])
-            control_existente = CCRecepcionMateriaPrima.objects.get(recepcionmp = datos_front['recepcionmp'])
+            control_existente = CCRecepcionMateriaPrima.objects.filter(recepcionmp = datos_front['recepcionmp']).exists()
             if control_existente:
-                control_existente.humedad = datos_front['humedad']
-                control_existente.presencia_insectos = datos_front['presencia_insectos']
-                control_existente.observaciones = datos_front['observaciones']
-                control_existente.cc_registrado_por = usuario
-                control_existente.save()
+                CCRecepcionMateriaPrima.objects.filter(recepcionmp = datos_front['recepcionmp']).update(
+                    humedad = datos_front['humedad'],
+                    presencia_insectos = datos_front['presencia_insectos'],
+                    observaciones = datos_front['observaciones'],
+                    cc_registrado_por = usuario
+                )
+                serializer.save()
             else:
                 print('creo que no deberia llegar aqui')
                 self.perform_create(serializer)
-            
+        
         # serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
     
@@ -115,18 +118,17 @@ class CCPepaViewSet(viewsets.ModelViewSet):
         ccrendimiento = get_object_or_404(CCRendimiento, pk=cc_rendimiento_pk, cc_recepcionmp=ccrecep)
         ccpepa = get_object_or_404(CCPepa, pk=pk,cc_rendimiento=ccrendimiento)
         serializer = self.get_serializer(ccpepa)
-        return Response(serializer.data)        
-
+        return Response(serializer.data)            
+    
+    # def list(self, request,cc_recepcionmp_pk=None,cc_rendimiento_pk=None,):
+    #     ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=cc_recepcionmp_pk)
+    #     ccrendimiento = get_object_or_404(CCRendimiento, pk=cc_rendimiento_pk, cc_recepcionmp=ccrecep)
+    #     ccpepa = get_object_or_404(CCPepa, cc_rendimiento=ccrendimiento)
+    #     serializer = self.get_serializer(ccpepa)
+    #     return Response(serializer.data)
+    
 class FotosCCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
     queryset = FotosCC.objects.all()
     serializer_class = FotosCCRecepcionMateriaPrimaSerializer
     permission_classes = [IsAuthenticated,]
     
-
-    
-    def list(self, request,cc_recepcionmp_pk=None,cc_rendimiento_pk=None,):
-        ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=cc_recepcionmp_pk)
-        ccrendimiento = get_object_or_404(CCRendimiento, pk=cc_rendimiento_pk, cc_recepcionmp=ccrecep)
-        ccpepa = get_object_or_404(CCPepa, cc_rendimiento=ccrendimiento)
-        serializer = self.get_serializer(ccpepa)
-        return Response(serializer.data)

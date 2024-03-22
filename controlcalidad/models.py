@@ -34,6 +34,7 @@ class CCRecepcionMateriaPrima(models.Model):
     class Meta:
         verbose_name = ('CC Recepcion Mp')
         verbose_name_plural = ('1.0 - CC Recepcion Materia Prima')
+        ordering = ('-pk', )
 
     def __str__(self):
         return "Control Calidad Lote N° %s"% (self.recepcionmp.pk)
@@ -67,6 +68,7 @@ class CCRendimiento(models.Model):
     class Meta:
         verbose_name = ('Muestra Lote RecepcionMP')
         verbose_name_plural = ('1.1 - Muestra Lote RecepcionMP')
+        ordering = ('-pk', )
 
     def __str__(self):
         return "Muestra CC Lote N° %s"% (self.pk)
@@ -106,6 +108,7 @@ class CCPepa(models.Model):
     class Meta:
         verbose_name = ('CC Pepa muestra')
         verbose_name_plural = ('1.2 - CC Pepa muestras')
+        ordering = ('-pk', )
     def __str__(self):
         return "CC de Pepa asociada a Muestra %s"% (self.cc_rendimiento.pk)   
     

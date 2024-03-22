@@ -14,4 +14,6 @@ class CCRecepcionMateriaPrimaAdmin(admin.ModelAdmin):
 admin.site.register(CCRendimiento)
 
 
+admin.site.register(CCPepa)
+
 # Register your models here.
