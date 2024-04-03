@@ -20,9 +20,10 @@ urlpatterns = [
     path('api/', include('productores.urls', namespace='productores')),
     path('api/', include('core.urls', namespace='core')),
     path('api/', include('comunas.urls')),
-    path('api/', include('comercializador.urls')),
-    path('api/', include('controlcalidad.urls')),
-    path('api/', include('bodegas.urls'))
+    path('api/', include('comercializador.urls', namespace='comercializador')),
+    path('api/', include('controlcalidad.urls', namespace='controlcalidad')),
+    path('api/', include('bodegas.urls', namespace='bodegas')),
+    path('api/', include('produccion.urls', namespace='produccion')),
     
 ]
 

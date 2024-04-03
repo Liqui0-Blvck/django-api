@@ -1,6 +1,7 @@
 from django.urls import path, include
 from .views import *
 from rest_framework_nested import routers
+app_name = 'bodegas'
 
 router = routers.SimpleRouter()
 router.register(r'cc-guiainterna', CCGuiaInternaViewset)
