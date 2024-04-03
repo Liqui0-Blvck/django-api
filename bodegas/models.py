@@ -1,9 +1,6 @@
 from django.db import models
-from simple_history.models import HistoricalRecords as Historia
 from django.urls import reverse
-import string, random
 from .estados_modelo import *
-from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
 from controlcalidad.estados_modelo import CALIDAD_FRUTA
 from core.models import ModeloBase, ModeloBaseHistorico
@@ -23,7 +20,6 @@ class CCGuiaInterna(ModeloBase):
     def __str__(self):
         
         return "%s"% (self.cc_guia)
-
 
 class PatioTechadoExterior(ModeloBaseHistorico):
     cc_guia                 = models.ForeignKey("bodegas.CCGuiaInterna", on_delete=models.SET_NULL, null=True, blank=True)
@@ -62,105 +58,107 @@ class EnvasesPatioTechadoExt(ModeloBase):
         
         return "%s"% self.pk
         
+class BinBodega(ModeloBaseHistorico):
+    limite_opciones         = models.Q(app_label = 'bodegas', model = 'bodegag1') | models.Q(app_label = 'bodegas', model = 'bodegag1reproceso') | models.Q(app_label = 'bodegas', model = 'bodegag2') | models.Q(app_label = 'bodegas', model = 'bodegag2reproceso') 
+    tipo_binbodega          = models.ForeignKey('contenttypes.ContentType', on_delete=models.SET_NULL, null=True, limit_choices_to = limite_opciones)
+    id_binbodega            = models.PositiveIntegerField()
+    binbodega               = GenericForeignKey('tipo_binbodega', 'id_binbodega')
+    procesado               = models.BooleanField(default=False)
+    procesado_por           = models.ForeignKey("auth.User", on_delete=models.CASCADE, blank=True, null=True)
+    estado_binbodega        = models.CharField(max_length=1, choices=ESTADO_BIN_BODEGA, default='1')
+    
+    def __str__(self):
+        if self.tipo_binbodega == 'bodegag1' or  self.tipo_binbodega == 'bodegag2' or self.tipo_binbodega == 'bodegag1reproceso' or self.tipo_binbodega == 'bodegag2reproceso':
+            return '%s'%self.binbodega.codigo_tarja
+        else:
+            return '%s'%self.pk
+
+class BodegaResiduos(ModeloBaseHistorico):
+    produccion              = models.OneToOneField("produccion.TarjaResultante",on_delete=models.CASCADE)
+    kilos_residuo           = models.FloatField(default=0.0)
+    fumigado                = models.BooleanField(default=False)  
+    fecha_fumigacion        = models.DateTimeField(blank=True, null=True)    
+    
+    class Meta:
+        verbose_name = 'Bodega Residuo'
+        verbose_name_plural = 'Bodega Residuos'
+
+    def __str__(self):
+        return "%s"% (self.produccion.codigo_tarja)
+
+class BodegaG1(ModeloBaseHistorico):
+    produccion              = models.OneToOneField("produccion.TarjaResultante",on_delete=models.CASCADE)
+    estado_bin              = models.CharField(choices=ESTADO_BIN_G1, max_length=1, default='1')
+    kilos_fruta             = models.FloatField(default=0.0)
+    variedad                = models.CharField(choices=VARIEDAD, max_length=3,default='---')
+    calibre                 = models.CharField(choices=CALIBRES, max_length=2,default='0')
+    calle_bodega            = models.CharField(max_length=2, choices=CALLE_BODEGA_1, default='-')
+    estado_bin              = models.CharField(choices=ESTADO_BIN_G1, max_length=1, default='1')
+    fumigado                = models.BooleanField(default=False)  
+    fecha_fumigacion        = models.DateTimeField(blank=True, null=True)  
 
 
+    class Meta:
+        verbose_name = 'Bodega G1'
+        verbose_name_plural = 'Bodega G1'
 
 
     
+    def __str__(self):
+        return "%s"% (self.produccion.codigo_tarja)
+      
+class BodegaG1Reproceso(ModeloBaseHistorico):
+    reproceso               = models.OneToOneField("produccion.TarjaResultanteReproceso",on_delete=models.CASCADE)
+    estado_bin              = models.CharField(choices=ESTADO_BIN_G1, max_length=1, default='1')
+    kilos_fruta             = models.FloatField(default=0.0)
+    variedad                = models.CharField(choices=VARIEDAD, max_length=3,default='---')
+    calibre                 = models.CharField(choices=CALIBRES, max_length=2,default='0')
+    calle_bodega            = models.CharField(max_length=2, choices=CALLE_BODEGA_1, default='-')
+    estado_bin              = models.CharField(choices=ESTADO_BIN_G1, max_length=1, default='1')
+    fumigado                = models.BooleanField(default=False)  
+    fecha_fumigacion        = models.DateTimeField(blank=True, null=True)  
 
-# ######### Bodega G1 ##########
-# class BodegaResiduos(models.Model):
-#     produccion              = models.ForeignKey("produccion.TarjaResultante",on_delete=models.CASCADE)
-#     fecha_creacion          = models.DateTimeField(auto_now_add=True)
-#     fecha_modificacion      = models.DateTimeField(auto_now=True)    
-#     historia                = Historia()  
-#     kilos_residuo             = models.FloatField(default=0.0)
-#     embalaje                = GenericRelation('embalaje.FrutaBodega')    
-#     fumigado                = models.BooleanField(default=False)  
-#     fecha_fumigacion      = models.DateTimeField(blank=True, null=True)    
+
+    class Meta:
+        verbose_name = 'Bodega G1 Reproceso'
+        verbose_name_plural = 'Bodegas G1 Reprocesos'
     
-#     class Meta:
-#         verbose_name = 'Bodega Residuo'
-#         verbose_name_plural = 'Bodega Residuos'
+    def __str__(self):
+        return "%s"% (self.reproceso.codigo_tarja)
 
-#     def __str__(self):
-#         return "%s"% (self.pk)
+class BodegaG2(ModeloBaseHistorico):
+    produccion              = models.OneToOneField("produccion.TarjaResultante",on_delete=models.CASCADE, db_index=True, null=True, blank=True)
+    estado_bin              = models.CharField(choices=ESTADO_BIN_G2, max_length=1, default='1')
+    kilos_fruta             = models.FloatField(default=0.0)
+    variedad                = models.CharField(choices=VARIEDAD, max_length=3,default='---')
+    calibre                 = models.CharField(choices=CALIBRES, max_length=2,default='0')
+    calle_bodega            = models.CharField(max_length=2, choices=CALLE_BODEGA_2, default='-')
+    fumigado                = models.BooleanField(default=False)  
+    fecha_fumigacion        = models.DateTimeField(blank=True, null=True)   
 
-# from seleccion.models import BinsPepaCalibrada
+    class Meta:
+        verbose_name = 'Bodega G2'
+        verbose_name_plural = 'Bodega G2'
 
-# class BodegaG1(models.Model):
-#     produccion              = models.ForeignKey("produccion.TarjaResultante",on_delete=models.CASCADE, null=True, blank=True)
-#     reproceso               = models.ForeignKey("produccion.TarjaResultanteReproceso",on_delete=models.CASCADE, null=True, blank=True)
-#     fecha_creacion          = models.DateTimeField(auto_now_add=True)
-#     fecha_modificacion      = models.DateTimeField(auto_now=True)    
-#     historia                = Historia()
-#     embalaje                = GenericRelation('embalaje.FrutaBodega')   
-#     estado_bin              = models.CharField(choices=ESTADO_BIN_G1, max_length=1, default='1')
-#     kilos_fruta             = models.FloatField(default=0.0)
-#     procesado_embalaje      = models.BooleanField(default=False)
-#     procesado_seleccion     = models.BooleanField(default=False)
-#     variedad                = models.CharField(choices=VARIEDAD, max_length=3,default='---')
-#     calibre                 = models.CharField(choices=CALIBRES, max_length=2,default='0')
-#     calle_bodega            = models.CharField(max_length=2, choices=CALLE_BODEGA_1, default='-')
-#     estado_bin              = models.CharField(choices=ESTADO_BIN_G1, max_length=1, default='1')
-#     dev_embalaje            = models.ForeignKey("embalaje.Embalaje", on_delete=models.SET_NULL, null=True, blank=True)
-#     tarja_devuelta          = models.ForeignKey('bodegas.BodegaG1', on_delete=models.SET_NULL, null=True, blank=True)
-#     fumigado                = models.BooleanField(default=False)  
-#     fecha_fumigacion        = models.DateTimeField(blank=True, null=True)  
-#     tarjas_agrupadas         = models.ForeignKey('bodegas.AgrupacionDeBinsBodegas', on_delete=models.SET_NULL, null=True, blank=True)
-#     fruta_sobrante_agrupacion = models.ForeignKey('bodegas.FrutaSobranteDeAgrupacion', on_delete=models.SET_NULL, null=True, blank=True)
+    def __str__(self):
+        return "%s"% (self.produccion.codigo_tarja)
 
+class BodegaG2Reproceso(ModeloBaseHistorico):
+    reproceso               = models.OneToOneField("produccion.TarjaResultanteReproceso",on_delete=models.CASCADE)
+    estado_bin              = models.CharField(choices=ESTADO_BIN_G2, max_length=1, default='1')
+    kilos_fruta             = models.FloatField(default=0.0)
+    variedad                = models.CharField(choices=VARIEDAD, max_length=3,default='---')
+    calibre                 = models.CharField(choices=CALIBRES, max_length=2,default='0')
+    calle_bodega            = models.CharField(max_length=2, choices=CALLE_BODEGA_2, default='-')
+    fumigado                = models.BooleanField(default=False)  
+    fecha_fumigacion        = models.DateTimeField(blank=True, null=True)   
 
-#     class Meta:
-#         verbose_name = 'Bodega G1'
-#         verbose_name_plural = 'Bodega G1'
+    class Meta:
+        verbose_name = 'Bodega G2 Reproceso'
+        verbose_name_plural = 'Bodega G2 Reprocesos'
 
-
-    
-#     def __str__(self):
-#         if self.produccion != None:
-#             return "%s"% (self.produccion.codigo_tarja)
-#         elif self.tarja_devuelta != None:
-#             return "%s"%(self.tarja_devuelta.produccion.codigo_tarja)
-#         elif self.tarjas_agrupadas != None:
-#             return "%s"%(self.tarjas_agrupadas.codigo_tarja)
-
-
-
-
-# ######### Bodega G2 ##########
-# class BodegaG2(models.Model):
-#     produccion              = models.ForeignKey("produccion.TarjaResultante",on_delete=models.CASCADE, db_index=True, null=True, blank=True)
-#     reproceso               = models.ForeignKey("produccion.TarjaResultanteReproceso",on_delete=models.CASCADE, null=True, blank=True)
-#     fumigado                = models.BooleanField(default=False)  
-#     fecha_fumigacion        = models.DateTimeField(blank=True, null=True)   
-#     estado_bin              = models.CharField(choices=ESTADO_BIN_G2, max_length=1, default='1')
-#     fecha_creacion          = models.DateTimeField(auto_now_add=True, db_index=True)
-#     fecha_modificacion      = models.DateTimeField(auto_now=True, db_index=True)  
-#     kilos_fruta             = models.FloatField(default=0.0)
-#     variedad                = models.CharField(choices=VARIEDAD, max_length=3,default='---', db_index=True)
-#     calibre                 = models.CharField(choices=CALIBRES, max_length=2,default='0', db_index=True)
-#     historia                = Historia()
-#     embalaje                = GenericRelation('embalaje.FrutaBodega')
-#     procesado_seleccion     = models.BooleanField(default=False)
-#     procesado_embalaje      = models.BooleanField(default=False)
-#     calle_bodega            = models.CharField(max_length=2, choices=CALLE_BODEGA_2, default='-')
-#     dev_embalaje            = models.ForeignKey("embalaje.Embalaje", on_delete=models.SET_NULL, null=True, blank=True)
-#     tarja_devuelta          = models.ForeignKey('bodegas.BodegaG2', on_delete=models.SET_NULL, null=True, blank=True)
-#     tarjas_agrupadas         = models.ForeignKey('bodegas.AgrupacionDeBinsBodegas', on_delete=models.SET_NULL, null=True, blank=True)
-#     fruta_sobrante_agrupacion = models.ForeignKey('bodegas.FrutaSobranteDeAgrupacion', on_delete=models.SET_NULL, null=True, blank=True)        
-
-#     class Meta:
-#         verbose_name = 'Bodega G2'
-#         verbose_name_plural = 'Bodega G2'
-
-#     def __str__(self):
-#         if self.produccion != None:
-#             return "%s"% (self.produccion.codigo_tarja)
-#         elif self.tarja_devuelta != None:
-#             return "%s"%(self.tarja_devuelta.produccion.codigo_tarja)
-#         elif self.tarjas_agrupadas != None:
-#             return "%s"%(self.tarjas_agrupadas.codigo_tarja)
+    def __str__(self):
+        return "%s"% (self.reproceso.codigo_tarja)
 
 
 # ######### Bodega G3 ##########

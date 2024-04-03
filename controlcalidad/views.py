@@ -89,6 +89,8 @@ class CCRendimientoViewSet(viewsets.ModelViewSet):
         queryset = self.queryset.filter(cc_recepcionmp=cc_recepcionmp_pk)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+   
 
 class CCPepaViewSet(viewsets.ModelViewSet):
     queryset = CCPepa.objects.all()
@@ -97,9 +99,10 @@ class CCPepaViewSet(viewsets.ModelViewSet):
     
 
     def retrieve(self, request,cc_recepcionmp_pk=None,cc_rendimiento_pk=None, pk=None):
+        print(self.kwargs)
         ccrecep = get_object_or_404(CCRecepcionMateriaPrima, pk=cc_recepcionmp_pk)
         ccrendimiento = get_object_or_404(CCRendimiento, pk=cc_rendimiento_pk, cc_recepcionmp=ccrecep)
-        ccpepa = get_object_or_404(CCPepa, pk=pk,cc_rendimiento=ccrendimiento)
+        ccpepa = get_object_or_404(CCPepa, pk=pk, cc_rendimiento=ccrendimiento)
         serializer = self.get_serializer(ccpepa)
         return Response(serializer.data)        
     
@@ -109,6 +112,7 @@ class CCPepaViewSet(viewsets.ModelViewSet):
         ccpepa = get_object_or_404(CCPepa, cc_rendimiento=ccrendimiento)
         serializer = self.get_serializer(ccpepa)
         return Response(serializer.data)
+
 
 class FotosCCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
     queryset = FotosCC.objects.all()

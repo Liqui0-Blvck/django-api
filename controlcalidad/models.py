@@ -39,7 +39,7 @@ class CCRecepcionMateriaPrima(models.Model):
         return "Control Calidad Lote N° %s"% (self.recepcionmp.pk)
 
 class FotosCC(models.Model):
-    ccrecepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.CASCADE)
+    ccrecepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.CASCADE, null=True, blank=True)
     imagen = models.ImageField(upload_to=fotos_cc, blank=True, verbose_name='Fotos Control', null=True)
 
 
