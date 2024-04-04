@@ -18,6 +18,17 @@ class PatioTechadoExteriorSerializer(serializers.ModelSerializer):
     model = PatioTechadoExterior
     fields = '__all__'
     
+  def get_variedad(self, obj):
+    try:
+      variedad = EnvasesPatioTechadoExt.objects.filter(guia_patio = obj.pk).first().variedad
+      if variedad:
+        return variedad
+      else:
+        return None
+        
+    except:
+      return None
+    
 
     
 class BinBodegaSerializer(serializers.ModelSerializer):
