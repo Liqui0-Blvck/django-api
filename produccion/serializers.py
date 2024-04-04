@@ -7,6 +7,12 @@ class ProduccionSerializer(serializers.ModelSerializer):
         model = Produccion
         fields = '__all__'
         
+class DetalleProduccionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Produccion
+        fields = '__all__'
+        
+        
 class OperariosEnProduccionSerializer(serializers.ModelSerializer):
     class Meta:
         model = OperariosEnProduccion
