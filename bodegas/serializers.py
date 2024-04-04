@@ -33,6 +33,12 @@ class PatioTechadoExteriorSerializer(serializers.ModelSerializer):
     except:
       return None
     
+  def get_estado_lote_label(self, obj):
+    return obj.get_estado_lote_display()
+  
+  def get_ubicacion_label(self, obj):
+    return obj.get_ubicacion_display()
+    
 
     
 class BinBodegaSerializer(serializers.ModelSerializer):

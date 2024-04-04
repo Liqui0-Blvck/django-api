@@ -1,5 +1,6 @@
 from .models import *
 from rest_framework import serializers
+from recepcionmp.models import *
 
 
 class ProduccionSerializer(serializers.ModelSerializer):
@@ -12,6 +13,7 @@ class DetalleProduccionSerializer(serializers.ModelSerializer):
     operarios = serializers.SerializerMethodField()
     tarjas_resultantes = serializers.SerializerMethodField()
     estado_label = serializers.SerializerMethodField()
+    
     
     def get_tarjas_resultantes(self, obj):
         tarjas = TarjaResultante.objects.filter(produccion=obj.pk)
@@ -34,14 +36,23 @@ class DetalleProduccionSerializer(serializers.ModelSerializer):
 
 
 class LotesProgramaSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = LotesPrograma
         fields = '__all__'
         
 class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
+    numero_lote = serializers.SerializerMethodField()
     class Meta:
         model = LotesPrograma
         fields = '__all__'
+        
+    def get_numero_lote(self, obj):
+        if obj.bodega_techado_ext.guia_patio.tipo_recepcion.model == 'recepcionmp':
+            recepcion = RecepcionMp.objects.filter(pk = obj.bodega_techado_ext.guia_patio.id_recepcion).first().numero_lote
+            return recepcion
+        else:
+            return None
         
 class OperariosEnProduccionSerializer(serializers.ModelSerializer):
     class Meta:

@@ -8,6 +8,15 @@ from bodegas.models import *
 import random, string
 from controlcalidad.models import *
 
+@receiver(post_save, sender=LotesPrograma)
+def cambio_estado_lote_programa(sender, created, instance, **kwargs):
+    if created and instance:
+        EnvasesPatioTechadoExt.objects.filter(pk = instance.bodega_techado_ext.pk).update(estado_envase = '2')
+        instance.bin_ingresado = True
+        instance.save()
+        
+        
+
 
 @receiver(post_save, sender=TarjaResultante)
 def vincula_resultante_bodega_rs_g1_g2(sender, created, instance, **kwargs):
