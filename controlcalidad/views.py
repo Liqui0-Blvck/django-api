@@ -72,7 +72,6 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
         listamuestras = get_list_or_404(CCRendimiento, cc_recepcionmp=ccrecep)
         serializer = CCRendimientoSerializer(listamuestras, many=True)
         return Response(serializer.data)
-    
 
 class CCRendimientoViewSet(viewsets.ModelViewSet):
     queryset = CCRendimiento.objects.all()
@@ -89,8 +88,6 @@ class CCRendimientoViewSet(viewsets.ModelViewSet):
         queryset = self.queryset.filter(cc_recepcionmp=cc_recepcionmp_pk)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    
-   
 
 class CCPepaViewSet(viewsets.ModelViewSet):
     queryset = CCPepa.objects.all()
@@ -113,12 +110,19 @@ class CCPepaViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(ccpepa)
         return Response(serializer.data)
 
-
 class FotosCCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
     queryset = FotosCC.objects.all()
     serializer_class = FotosCCRecepcionMateriaPrimaSerializer
     permission_classes = [IsAuthenticated,]
     
+####### MODULO Produccion ########
 
-    
-    
+class CCTarjaResultanteViewSet(viewsets.ModelViewSet):
+    queryset = CCTarjaResultante.objects.all()
+    serializer_class = CCTarjaResultanteSerializer
+    permission_classes = [IsAuthenticated,]
+
+class CCTarjaResultanteReprocesoViewSet(viewsets.ModelViewSet):
+    queryset = CCTarjaResultanteReproceso.objects.all()
+    serializer_class = CCTarjaResultanteReprocesoSerializer
+    permission_classes = [IsAuthenticated,]

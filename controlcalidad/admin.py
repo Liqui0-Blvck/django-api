@@ -13,5 +13,6 @@ class CCRecepcionMateriaPrimaAdmin(admin.ModelAdmin):
 
 admin.site.register(CCRendimiento)
 
-
+admin.site.register(CCTarjaResultante)
+admin.site.register(CCTarjaResultanteReproceso)
 # Register your models here.

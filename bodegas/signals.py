@@ -71,3 +71,15 @@ def vincular_bin_g2_reproceso_a_binbodega(sender, instance, created, **kwargs):
     if created and instance:
         ct = ContentType.objects.get_for_model(BodegaG2Reproceso)
         BinBodega.objects.update_or_create(tipo_binbodega=ct, id_binbodega=instance.pk) 
+        
+@receiver(post_save, sender=BodegaResiduosReproceso)
+def vincular_bin_rs_reproceso_a_binbodega(sender, instance, created, **kwargs):
+    if created and instance:
+        ct = ContentType.objects.get_for_model(BodegaResiduosReproceso)
+        BinBodega.objects.update_or_create(tipo_binbodega=ct, id_binbodega=instance.pk) 
+        
+@receiver(post_save, sender=BodegaResiduos)
+def vincular_bin_rs_a_binbodega(sender, instance, created, **kwargs):
+    if created and instance:
+        ct = ContentType.objects.get_for_model(BodegaResiduos)
+        BinBodega.objects.update_or_create(tipo_binbodega=ct, id_binbodega=instance.pk) 

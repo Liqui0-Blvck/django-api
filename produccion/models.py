@@ -88,7 +88,6 @@ class Reproceso(ModeloBaseHistorico):
     fecha_termino_proceso   = models.DateTimeField(blank=True, null = True)
     fecha_pausa_proceso     = models.DateTimeField(blank=True, null = True)
     fecha_finpausa_proceso  = models.DateTimeField(blank=True, null = True)
-    kilosdelprograma        = models.FloatField(blank=True, null=True, default=0.0)
     bins                    = models.ManyToManyField("self", through= 'produccion.BinsEnReproceso') 
     tarjas_resultantes      = models.ManyToManyField("self", through= 'produccion.TarjaResultanteReproceso') 
     operarios               = models.ManyToManyField('core.Operario', through='produccion.OperariosEnReproceso')
@@ -120,9 +119,9 @@ class OperariosEnReproceso(ModeloBase):
     
 class BinsEnReproceso(ModeloBaseHistorico):
     reproceso           = models.ForeignKey(Reproceso, on_delete=models.CASCADE)
-    limite_opciones     = models.Q(app_name = 'bodegas', model = 'bodegag1') | models.Q(app_name = 'bodegas', model = 'bodegag2') | models.Q(app_name = 'bodegas', model = 'bodegag1reproceso') | models.Q(app_name = 'bodegas', model = 'bodegag2reproceso')
+    limite_opciones     = models.Q(app_label = 'bodegas', model = 'bodegag1') | models.Q(app_label = 'bodegas', model = 'bodegag2') | models.Q(app_label = 'bodegas', model = 'bodegag1reproceso') | models.Q(app_label = 'bodegas', model = 'bodegag2reproceso')
     tipo_bin_bodega     = models.ForeignKey('contenttypes.ContentType', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to=limite_opciones)
-    id_bin_bodega       = models.PositiveIntegerField(blank=True, null=True)
+    id_bin_bodega       = models.PositiveIntegerField()
     bin_bodega          = GenericForeignKey('tipo_bin_bodega', 'id_bin_bodega')
     bin_procesado       = models.BooleanField(default=False)
     fecha_procesado     = models.DateTimeField(blank=True, null=True)

@@ -81,4 +81,13 @@ class CCPepaSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
         
+class CCTarjaResultanteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CCTarjaResultante
+        fields = '__all__'
 
+class CCTarjaResultanteReprocesoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CCTarjaResultanteReproceso
+        fields = '__all__'
+        

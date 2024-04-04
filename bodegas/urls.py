@@ -4,12 +4,13 @@ from rest_framework_nested import routers
 app_name = 'bodegas'
 
 router = routers.SimpleRouter()
-router.register(r'cc-guiainterna', CCGuiaInternaViewset)
-router.register(r'patio-techado-ex', PatioTechadoExteriorViewset)
-router.register(r'patio-techado-ex-id', PatioTechadoExteriorUpdatedViewset)
-router.register(r'envase-patio-techado-ex', EnvasesPatioTechadoExteriorViewset)
+router.register(r'patio-exterior', PatioTechadoExteriorViewset)
+router.register(r'bin-bodega', BinBodegaViewSet)
+envases_guia = routers.NestedSimpleRouter(router, r'patio-exterior', lookup='guia_patio')
+envases_guia.register(r'envase-guia-patio', EnvasesPatioTechadoExteriorViewset)
 
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('', include(envases_guia.urls)),
 ]

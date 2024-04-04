@@ -65,7 +65,7 @@ class BinBodega(ModeloBaseHistorico):
     binbodega               = GenericForeignKey('tipo_binbodega', 'id_binbodega')
     procesado               = models.BooleanField(default=False)
     procesado_por           = models.ForeignKey("auth.User", on_delete=models.CASCADE, blank=True, null=True)
-    estado_binbodega        = models.CharField(max_length=1, choices=ESTADO_BIN_BODEGA, default='1')
+    estado_binbodega        = models.CharField(max_length=1, choices=ESTADO_BIN_BODEGA, default='0')
     
     def __str__(self):
         if self.tipo_binbodega == 'bodegag1' or  self.tipo_binbodega == 'bodegag2' or self.tipo_binbodega == 'bodegag1reproceso' or self.tipo_binbodega == 'bodegag2reproceso':
@@ -85,6 +85,19 @@ class BodegaResiduos(ModeloBaseHistorico):
 
     def __str__(self):
         return "%s"% (self.produccion.codigo_tarja)
+
+class BodegaResiduosReproceso(ModeloBaseHistorico):
+    reproceso              = models.OneToOneField("produccion.TarjaResultanteReproceso",on_delete=models.CASCADE)
+    kilos_residuo           = models.FloatField(default=0.0)
+    fumigado                = models.BooleanField(default=False)  
+    fecha_fumigacion        = models.DateTimeField(blank=True, null=True)    
+    
+    class Meta:
+        verbose_name = 'Bodega Residuo Reproceso'
+        verbose_name_plural = 'Bodega Residuos Reprocesos'
+
+    def __str__(self):
+        return "%s"% (self.reproceso.codigo_tarja)
 
 class BodegaG1(ModeloBaseHistorico):
     produccion              = models.OneToOneField("produccion.TarjaResultante",on_delete=models.CASCADE)
