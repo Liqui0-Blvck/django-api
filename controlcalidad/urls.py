@@ -21,6 +21,6 @@ urlpatterns = [
     path(r'', include(router.urls)),
     path(r'', include(muestras.urls)),
     path(r'', include(cdcpepa_muestra.urls)),
-    # path('estado-aprobacion-jefatura/<int:id>/', EstadoAprobacionJefaturaAPIView.as_view()),
-    # path('estado-contramuestra/<int:id>/', EstadoContraMuestraAPIView.as_view())
+    path('estado-aprobacion-jefatura/<int:id>/', EstadoAprobacionJefaturaAPIView.as_view()),
+    path('estado-contramuestra/<int:id>/', EstadoContraMuestraAPIView.as_view())
 ]

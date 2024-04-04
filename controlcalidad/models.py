@@ -27,6 +27,8 @@ class CCRecepcionMateriaPrima(models.Model):
     historia = Historia()
     estado_aprobacion_cc = models.CharField(max_length=1, choices=ESTADO_APROBACION_CC_X_JEFATURA, default='0')
     fotos_cc = models.ManyToManyField('self', through='FotosCC')
+    esta_contramuestra = models.CharField(max_length=1, choices=ESTADO_CONTRAMUESTRA, default='0')
+
     
     class Meta:
         verbose_name = ('CC Recepcion Mp')
@@ -55,12 +57,12 @@ class CCRendimiento(models.Model):
     historia = Historia()
     aprobado_cc = models.BooleanField(default=False)
     es_contramuestra = models.BooleanField(default=False)
-    esta_contramuestra = models.CharField(max_length=1, choices=ESTADO_CONTRAMUESTRA, default='0')
     
 
     class Meta:
         verbose_name = ('Muestra Lote RecepcionMP')
         verbose_name_plural = ('1.1 - Muestra Lote RecepcionMP')
+        ordering = ('-pk', )
 
     def __str__(self):
         return "Muestra CC Lote N° %s"% (self.pk)
@@ -98,6 +100,8 @@ class CCPepa(models.Model):
     class Meta:
         verbose_name = ('CC Pepa muestra')
         verbose_name_plural = ('1.2 - CC Pepa muestras')
+        ordering = ('-pk', )
+        
     def __str__(self):
         return "CC de Pepa asociada a Muestra %s"% (self.cc_rendimiento.pk)   
     
@@ -129,6 +133,7 @@ class CCTarjaResultante(models.Model):
     class Meta:
         verbose_name = ('CC Tarja Resultante Producción')
         verbose_name_plural = ('3. CC Tarjas Resultantes Producción')
+        ordering = ('-pk', )
      
         
 
@@ -161,6 +166,7 @@ class CCTarjaResultanteReproceso(models.Model):
     class Meta:
         verbose_name = 'CC Tarja Resultante Reproceso'
         verbose_name_plural = '3. CC Tarjas Resultantes Reproceso'
+        ordering = ('-pk', )
 
     def __str__(self):
         return "CC %s de la tarja %s"% (self.pk, self.tarja.codigo_tarja)

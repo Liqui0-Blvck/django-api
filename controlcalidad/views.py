@@ -300,17 +300,17 @@ class FotosCCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated,]
     
 
-# class EstadoAprobacionJefaturaAPIView(generics.UpdateAPIView):
-#     lookup_field = 'id'
-#     queryset = CCRecepcionMateriaPrima.objects.all()
-#     serializer_class = EstadoAprobacionJefaturaSerializer
-#     permission_classes = [IsAuthenticated,]
+class EstadoAprobacionJefaturaAPIView(generics.UpdateAPIView):
+    lookup_field = 'id'
+    queryset = CCRecepcionMateriaPrima.objects.all()
+    serializer_class = EstadoAprobacionJefaturaSerializer
+    permission_classes = [IsAuthenticated,]
     
-# class EstadoContraMuestraAPIView(generics.UpdateAPIView):
-#     lookup_field = 'id'
-#     queryset = CCRecepcionMateriaPrima  .objects.all()
-#     serializer_class = EstadoContraMuestraSerializer
-#     permission_classes = [IsAuthenticated,]
+class EstadoContraMuestraAPIView(generics.UpdateAPIView):
+    lookup_field = 'id'
+    queryset = CCRecepcionMateriaPrima  .objects.all()
+    serializer_class = EstadoContraMuestraSerializer
+    permission_classes = [IsAuthenticated,]
     
 
 class CCTarjaResultanteViewSet(viewsets.ModelViewSet):
