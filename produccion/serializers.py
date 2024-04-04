@@ -1,6 +1,7 @@
 from .models import *
 from rest_framework import serializers
 from recepcionmp.models import *
+from bodegas.models import *
 
 
 class ProduccionSerializer(serializers.ModelSerializer):
@@ -43,6 +44,10 @@ class LotesProgramaSerializer(serializers.ModelSerializer):
         
 class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
     numero_lote = serializers.SerializerMethodField()
+    guia_patio = serializers.SerializerMethodField()
+    numero_bin = serializers.SerializerMethodField()
+    kilos_fruta = serializers.SerializerMethodField()
+    
     class Meta:
         model = LotesPrograma
         fields = '__all__'
@@ -53,6 +58,28 @@ class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
             return recepcion
         else:
             return None
+    
+    def get_guia_patio(self, obj):
+        patio_techado_ext = EnvasesPatioTechadoExt.objects.filter(pk=obj.bodega_techado_ext.pk).first()
+        print(patio_techado_ext.guia_patio.pk)
+        if patio_techado_ext:
+            return patio_techado_ext.guia_patio.pk
+        else:
+            return None
+        
+    def get_numero_bin(self, obj):
+        patio_techado_ext = EnvasesPatioTechadoExt.objects.filter(pk=obj.bodega_techado_ext.pk).first()
+        if patio_techado_ext:
+            return patio_techado_ext.numero_bin
+        else:
+            return None 
+        
+    def get_kilos_fruta(self, obj):
+        patio_techado_ext = EnvasesPatioTechadoExt.objects.filter(pk=obj.bodega_techado_ext.pk).first()
+        if patio_techado_ext:
+            return patio_techado_ext.kilos_fruta
+        else:
+            return None 
         
 class OperariosEnProduccionSerializer(serializers.ModelSerializer):
     class Meta:
