@@ -14,6 +14,10 @@ class EnvasesPatioTechadoExtSerializer(serializers.ModelSerializer):
     
 class PatioTechadoExteriorSerializer(serializers.ModelSerializer):
   envases = EnvasesPatioTechadoExtSerializer(many=True, read_only=True, source='envasespatiotechadoext_set')
+  variedad = serializers.SerializerMethodField()
+  estado_lote_label = serializers.SerializerMethodField()
+  ubicacion_label = serializers.SerializerMethodField()
+  
   class Meta:
     model = PatioTechadoExterior
     fields = '__all__'
