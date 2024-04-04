@@ -21,6 +21,31 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'first_name', 'last_name', 'email', 'username']
 
+class UserRegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    password_confirm = serializers.CharField(write_only=True)
+    is_admin = serializers.BooleanField(write_only=True, required=False)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'first_name', 'last_name', 'password', 'password_confirm', 'is_active', 'is_staff', 'is_admin')
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError("Las contraseñas no coinciden")
+        return attrs
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        validated_data.pop('password_confirm')
+        is_admin = validated_data.pop('is_admin', False)
+        user = User.objects.create(**validated_data)
+        user.set_password(password)
+        if is_admin:
+            user.is_superuser = True
+            user.is_staff = True
+        user.save()
+        return user
 
 class OperarioSerializer(serializers.ModelSerializer):
     class Meta:

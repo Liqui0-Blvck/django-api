@@ -30,6 +30,8 @@ class CCRecepcionMateriaPrima(models.Model):
     historia = Historia()
     estado_aprobacion_cc = models.CharField(max_length=1, choices=ESTADO_APROBACION_CC_X_JEFATURA, default='0')
     fotos_cc = models.ManyToManyField('self', through='FotosCC')
+    esta_contramuestra = models.CharField(max_length=1, choices=ESTADO_CONTRAMUESTRA, default='0')
+    
     
     class Meta:
         verbose_name = ('CC Recepcion Mp')
@@ -62,7 +64,6 @@ class CCRendimiento(models.Model):
     historia = Historia()
     aprobado_cc = models.BooleanField(default=False)
     es_contramuestra = models.BooleanField(default=False)
-    esta_contramuestra = models.CharField(max_length=1, choices=ESTADO_CONTRAMUESTRA, default='0')
     
 
     class Meta:
@@ -76,9 +77,10 @@ class CCRendimiento(models.Model):
 
 
 class CCPepa(models.Model):
-    cc_rendimiento          = models.OneToOneField("controlcalidad.CCRendimiento", on_delete=models.CASCADE)    
+    cc_rendimiento          = models.OneToOneField("controlcalidad.CCRendimiento", on_delete=models.CASCADE, related_name='cdcpepa')    
     fecha_creacion          = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion      = models.DateTimeField(auto_now=True)    
+    fecha_modificacion      = models.DateTimeField(auto_now=True)
+    peso_muestra_calibre    = models.FloatField(blank=True, null =True, default=0.0)
     muestra_variedad        = models.FloatField(blank=True, null =True, default=0.0)
     daño_insecto            = models.FloatField(blank=True, null =True,default=0.0)
     hongo                   = models.FloatField(blank=True, null =True,default=0.0)

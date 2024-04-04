@@ -10,5 +10,5 @@ router.register(r'envase-patio-techado-ex', EnvasesPatioTechadoExteriorViewset)
 
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
 ]

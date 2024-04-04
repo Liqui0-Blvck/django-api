@@ -79,7 +79,9 @@ class UserAPIView(generics.RetrieveAPIView):
     http_method_names = ['get']
     serializer_class = UserSerializer
 
-
+class UserRegisterCreateAPIView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegisterSerializer
 
 class CargoPerfilViewSet(viewsets.ModelViewSet):
     queryset = CargoPerfil.objects.all()

@@ -227,14 +227,14 @@ INVITATIONS_INVITATION_ONLY = True
 
 CAPTURADOR_SESSION_ID = 'capturador_web'
 
-EMAIL_USE_TLS = True
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.office365.com'
-EMAIL_HOST_USER = 'agricola@prodalmen.cl'
-DEFAULT_FROM_EMAIL = 'agricola@prodalmen.cl'
-EMAIL_FROM = 'agricola@prodalmen.cl'
-EMAIL_HOST_PASSWORD = 'Bor04315'
-EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.office365.com'
+# EMAIL_HOST_USER = 'agricola@prodalmen.cl'
+# DEFAULT_FROM_EMAIL = 'agricola@prodalmen.cl'
+# EMAIL_FROM = 'agricola@prodalmen.cl'
+# EMAIL_HOST_PASSWORD = 'Bor04315'
+# EMAIL_PORT = 587
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 

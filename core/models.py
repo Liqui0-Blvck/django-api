@@ -82,8 +82,8 @@ class Operario(ModeloBase):
     rut             = models.CharField(max_length=50, unique=True)
     tipo_operario   = models.CharField(max_length=10, choices=TIPOS_OPERARIO, default='seleccion' )
     activo          = models.BooleanField(default=True)
-    etiquetas       = models.CharField(max_length=50, blank=True)
-    pago_x_kilo     = models.IntegerField(default=50)
+    etiquetas       = models.CharField(max_length=50, blank=True) # eliminar en proxima revision
+    pago_x_kilo     = models.FloatField(default=50)
 
         
 

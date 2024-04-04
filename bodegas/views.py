@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import *
 from .serializers import *
+from django.utils import timezone
+from datetime import datetime
 
 
 
@@ -19,8 +21,6 @@ class PatioTechadoExteriorUpdatedViewset(viewsets.ModelViewSet):
   
 
 class PatioTechadoExteriorViewset(viewsets.ModelViewSet):
-  # search_fields = ['id_recepcion']
-  # filter_backends = (filters.SearchFilter, )
   lookup_field = 'id_recepcion'
   queryset = PatioTechadoExterior.objects.all()
   serializer_class = PatioTechadoExteriorSerializer
@@ -30,3 +30,4 @@ class PatioTechadoExteriorViewset(viewsets.ModelViewSet):
 class EnvasesPatioTechadoExteriorViewset(viewsets.ModelViewSet):
   queryset = EnvasesPatioTechadoExt.objects.all()
   serializer_class = EnvasesPatioTechadoExtSerializer
+

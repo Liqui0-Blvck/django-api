@@ -10,6 +10,7 @@ ESTADO_APROBACION_CC_X_JEFATURA = (
     ('0', 'En Espera de Aprobación'),
     ('1', 'Aprobado'),
     ('2', 'Rechazado'),
+    ('3', 'Contra Muestra'),
 )
 
 ESTADOS_CONTROL_RENDIMIENTO = (
@@ -71,9 +72,10 @@ PARAMETRO_HARINA = (
 
 
 ESTADO_CONTRAMUESTRA = (
-    ('0', 'Contramuestra Solicitada'),
-    ('1', 'Muestra Tomada'),
-    ('2', 'Control Pepa Ok'),
-    ('3', 'Calibre Ok'),
-    ('4', 'Contramuestra Cerrada')
+    ('0', 'Sin Solicitar'),
+    ('1', 'Contramuestra Solicitada'),
+    ('2', 'Muestra Tomada'),
+    ('3', 'Control Pepa Ok'),
+    ('4', 'Calibre Ok'),
+    ('5', 'Contramuestra Cerrada')
 )

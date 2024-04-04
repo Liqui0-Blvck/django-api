@@ -22,4 +22,5 @@ urlpatterns = [
     path(r'registros/', include(router.urls)),
     path(r'registros/', include(tractor_coloso.urls)),
     path('users/<int:id>', UserAPIView.as_view()),
+    path('registro-usuario/', UserRegisterCreateAPIView.as_view()),
 ]
