@@ -11,6 +11,7 @@ class DetalleProduccionSerializer(serializers.ModelSerializer):
     lotes = serializers.SerializerMethodField()
     operarios = serializers.SerializerMethodField()
     tarjas_resultantes = serializers.SerializerMethodField()
+    estado_label = serializers.SerializerMethodField()
     
     def get_tarjas_resultantes(self, obj):
         tarjas = TarjaResultante.objects.filter(produccion=obj.pk)
@@ -23,6 +24,9 @@ class DetalleProduccionSerializer(serializers.ModelSerializer):
     def get_lotes(self, obj):
         lotes = LotesPrograma.objects.filter(produccion=obj.pk)
         return LotesProgramaSerializer(lotes, many=True).data
+    
+    def get_estado_label(self, obj):
+        return obj.get_estado_display()
     
     class Meta:
         model = Produccion

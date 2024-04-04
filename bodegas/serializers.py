@@ -7,15 +7,18 @@ class CCGuiaInternaSerializer(serializers.ModelSerializer):
     model = CCGuiaInterna
     fields = '__all__'
     
-class PatioTechadoExteriorSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = PatioTechadoExterior
-    fields = '__all__'
-    
 class EnvasesPatioTechadoExtSerializer(serializers.ModelSerializer):
   class Meta:
     model = EnvasesPatioTechadoExt
     fields = '__all__'
+    
+class PatioTechadoExteriorSerializer(serializers.ModelSerializer):
+  envases = EnvasesPatioTechadoExtSerializer(many=True, read_only=True, source='envasespatiotechadoext_set')
+  class Meta:
+    model = PatioTechadoExterior
+    fields = '__all__'
+    
+
     
 class BinBodegaSerializer(serializers.ModelSerializer):
     class Meta:
