@@ -1,0 +1,1 @@
+python manage.py makemigrations bodegas comercializador controlcalidad productores recepcionmp core produccion
