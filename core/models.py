@@ -83,7 +83,7 @@ class Operario(ModeloBase):
     tipo_operario   = models.CharField(max_length=10, choices=TIPOS_OPERARIO, default='seleccion' )
     activo          = models.BooleanField(default=True)
     etiquetas       = models.CharField(max_length=50, blank=True)
-    pago_x_kilo     = models.IntegerField(default=50)
+    pago_x_kilo     = models.FloatField(default=50)
 
         
 

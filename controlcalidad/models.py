@@ -1,17 +1,21 @@
 from django.db import models
 from recepcionmp.estados_modelo import *
 from simple_history.models import HistoricalRecords as Historia
+from controlcalidad.estados_modelo import *
 from .estados_modelo import *
 from bodegas.estados_modelo import *
-
 
 def fotos_cc(instance, filename):
     return 'controlcalidad_recepcionmp/CDC_{0}/fotos_cc/{1}'.format(instance.pk, filename)
 
+def fotos_cc_li(instance, filename):
+    return 'controlcalidad_recepcionmp/Lote_{0}/fotos_cc/{1}'.format(instance.ccloteinterno.pk, filename)
+
 def fotos_cc_tarja_seleccionada(instance, filename):
     return 'controlcalidad_seleccion/{0}/tarja/{1}'.format(instance.seleccion.pk, filename)
 
-### Modulo RecepcionMP ###
+
+
 
 class CCRecepcionMateriaPrima(models.Model):
     recepcionmp = models.ForeignKey("recepcionmp.RecepcionMp", on_delete=models.CASCADE)
@@ -28,18 +32,22 @@ class CCRecepcionMateriaPrima(models.Model):
     estado_aprobacion_cc = models.CharField(max_length=1, choices=ESTADO_APROBACION_CC_X_JEFATURA, default='0')
     fotos_cc = models.ManyToManyField('self', through='FotosCC')
     esta_contramuestra = models.CharField(max_length=1, choices=ESTADO_CONTRAMUESTRA, default='0')
-
+    
     
     class Meta:
         verbose_name = ('CC Recepcion Mp')
         verbose_name_plural = ('1.0 - CC Recepcion Materia Prima')
+        ordering = ('-pk', )
 
     def __str__(self):
         return "Control Calidad Lote N° %s"% (self.recepcionmp.pk)
 
 class FotosCC(models.Model):
-    ccrecepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.CASCADE, null=True, blank=True)
+    ccrecepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to=fotos_cc, blank=True, verbose_name='Fotos Control', null=True)
+
+
+
 
 class CCRendimiento(models.Model):    
     cc_recepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.CASCADE)
@@ -67,10 +75,13 @@ class CCRendimiento(models.Model):
     def __str__(self):
         return "Muestra CC Lote N° %s"% (self.pk)
 
+
+
 class CCPepa(models.Model):
-    cc_rendimiento          = models.OneToOneField("controlcalidad.CCRendimiento", on_delete=models.CASCADE)    
+    cc_rendimiento          = models.OneToOneField("controlcalidad.CCRendimiento", on_delete=models.CASCADE, related_name='cdcpepa')    
     fecha_creacion          = models.DateTimeField(auto_now_add=True)
-    fecha_modificacion      = models.DateTimeField(auto_now=True)    
+    fecha_modificacion      = models.DateTimeField(auto_now=True)
+    peso_muestra_calibre    = models.FloatField(blank=True, null =True, default=0.0)
     muestra_variedad        = models.FloatField(blank=True, null =True, default=0.0)
     daño_insecto            = models.FloatField(blank=True, null =True,default=0.0)
     hongo                   = models.FloatField(blank=True, null =True,default=0.0)
@@ -101,14 +112,13 @@ class CCPepa(models.Model):
         verbose_name = ('CC Pepa muestra')
         verbose_name_plural = ('1.2 - CC Pepa muestras')
         ordering = ('-pk', )
-        
     def __str__(self):
         return "CC de Pepa asociada a Muestra %s"% (self.cc_rendimiento.pk)   
     
 ### Modulo Produccion ###
 
 class CCTarjaResultante(models.Model):
-    tarja                   = models.ForeignKey("produccion.TarjaResultante", on_delete=models.CASCADE)
+    tarja                   = models.OneToOneField("produccion.TarjaResultante", on_delete=models.CASCADE)
     estado_cc               = models.CharField(choices=ESTADO_CC_TARJA_RESULTANTE, default='1', max_length=1)
     variedad                = models.CharField(choices=VARIEDAD, default='---', max_length=3)
     calibre                 = models.CharField(choices=CALIBRES, default='0', max_length=25)

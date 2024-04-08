@@ -39,6 +39,7 @@ class GuiaRecepcionMP(ModeloBase):
     class Meta:
         verbose_name = ('1.0 Guias Recepcion MP')
         verbose_name_plural = ('1.0 Guias de Recepcion MP')
+        ordering = ['-pk']
     
     
     def __str__(self):

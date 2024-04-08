@@ -6,6 +6,7 @@ app_name = 'controlcalidad'
 
 router = routers.SimpleRouter()
 router.register(r'control-calidad/recepcionmp', CCRecepcionMateriaPrimaViewSet)
+#router.register(r'envasesmp', EnvasesMpViewSet)
 router.register(r'fotos-cc', FotosCCRecepcionMateriaPrimaViewSet)
 
 muestras = routers.NestedSimpleRouter(router, r'control-calidad/recepcionmp', lookup='cc_recepcionmp')
@@ -15,6 +16,7 @@ cdcpepa_muestra.register(r'cdcpepa', CCPepaViewSet)
 
 router.register(r'produccion/cdc-tarjaresultante', CCTarjaResultanteViewSet)
 router.register(r'reproceso/cdc-tarjaresultante', CCTarjaResultanteReprocesoViewSet)
+
 
 
 urlpatterns = [

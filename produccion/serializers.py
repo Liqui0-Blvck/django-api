@@ -47,6 +47,9 @@ class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
     guia_patio = serializers.SerializerMethodField()
     numero_bin = serializers.SerializerMethodField()
     kilos_fruta = serializers.SerializerMethodField()
+    variedad = serializers.SerializerMethodField()
+    guia_recepcion = serializers.SerializerMethodField()
+    
     
     class Meta:
         model = LotesPrograma
@@ -74,12 +77,26 @@ class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
         else:
             return None 
         
-    def get_kilos_fruta(self, obj):
+    def get_kilos_fruta (self, obj):
         patio_techado_ext = EnvasesPatioTechadoExt.objects.filter(pk=obj.bodega_techado_ext.pk).first()
         if patio_techado_ext:
             return patio_techado_ext.kilos_fruta
         else:
             return None 
+    def get_variedad(self, obj):
+        patio_techado_ext = EnvasesPatioTechadoExt.objects.filter(pk=obj.bodega_techado_ext.pk).first()
+        if patio_techado_ext:
+            return patio_techado_ext.variedad
+        else:
+            return None   
+        
+    def get_guia_recepcion(self, obj):
+        if obj.bodega_techado_ext.guia_patio.tipo_recepcion.model == 'recepcionmp':
+            recepcion = RecepcionMp.objects.filter(pk = obj.bodega_techado_ext.guia_patio.id_recepcion).first().guiarecepcion.pk    
+            return recepcion
+        else:
+            return None
+        
         
 class OperariosEnProduccionSerializer(serializers.ModelSerializer):
     class Meta:

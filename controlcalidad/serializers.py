@@ -82,9 +82,13 @@ from recepcionmp.models import *
         
         
 class CCTarjaResultanteSerializer(serializers.ModelSerializer):
+    estado_cc_label = serializers.SerializerMethodField()
     class Meta:
         model = CCTarjaResultante
         fields = '__all__'
+        
+    def get_estado_cc_label(self, obj):
+        return obj.get_estado_cc_display()
 
 class CCTarjaResultanteReprocesoSerializer(serializers.ModelSerializer):
     class Meta:
