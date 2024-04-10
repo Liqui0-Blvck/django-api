@@ -49,11 +49,19 @@ class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
     kilos_fruta = serializers.SerializerMethodField()
     variedad = serializers.SerializerMethodField()
     guia_recepcion = serializers.SerializerMethodField()
+    control_calidad = serializers.SerializerMethodField()
     
     
     class Meta:
         model = LotesPrograma
         fields = '__all__'
+        
+    def get_control_calidad(self, obj):
+        if obj.bodega_techado_ext.guia_patio.tipo_recepcion.model == 'recepcionmp':
+            recepcion = RecepcionMp.objects.filter(pk = obj.bodega_techado_ext.guia_patio.id_recepcion).first().pk
+            return recepcion
+        else:
+            return None
         
     def get_numero_lote(self, obj):
         if obj.bodega_techado_ext.guia_patio.tipo_recepcion.model == 'recepcionmp':

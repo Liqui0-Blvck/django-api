@@ -45,7 +45,7 @@ class CCRecepcionMateriaPrima(models.Model):
 class FotosCC(models.Model):
     ccrecepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to=fotos_cc, blank=True, verbose_name='Fotos Control', null=True)
-
+    
 
 
 
@@ -143,7 +143,7 @@ class CCTarjaResultante(models.Model):
     class Meta:
         verbose_name = ('CC Tarja Resultante Producción')
         verbose_name_plural = ('3. CC Tarjas Resultantes Producción')
-        ordering = ('-pk', )
+        ordering = ('-pk', '-fecha_creacion')
      
         
 

@@ -2,6 +2,7 @@ from http.client import METHOD_NOT_ALLOWED
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from .serializers import *
 from .models import *
+from produccion.models import *
 from recepcionmp.models import *
 from rest_framework import viewsets, filters, status, generics
 from rest_framework.permissions import IsAuthenticated
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from .funciones import *
+import json
 
 from django.db.models import Sum, Avg, F
 
@@ -199,9 +201,8 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'], url_path='rendimiento_lotes/(?P<pks_lotes>[^/.]+)')
     def rendimiento_lotes(self, request, pks_lotes=None):
         lotes_pks = pks_lotes.split(',')
-        print(lotes_pks)
         cc_muestra = get_list_or_404(RecepcionMp, pk__in = lotes_pks)
-        print(cc_muestra)
+
         
         muestra = cc_muestras_lotes(cc_muestra)
         cc_pepa = cc_pepa_lote(cc_muestra)
@@ -213,6 +214,12 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
         cc_merma_por = merma_porcentual(cc_aporte_pex, cc_porcentaje_liquidar)
         cc_calculo_final = calculo_final(muestra, cc_merma_por, cc_descuentos, cc_kilos_desc_merma)
         
+        
+        promedio_cc_muestras = promedio_porcentaje_muestras(muestra)
+        promedio_por_cc_pepa = promedio_porcentaje_cc_pepa(cc_pepa)
+        promedio_cc_pepa_calibrada = promedio_porcentaje_calibres(cc_pepa_calibre)
+        
+        
         cc_muestra_serializado = MuestraSerializer(muestra, many=True).data
         cc_pepa_serializado = CCPepaMuestraSerializer(cc_pepa, many=True).data
         cc_pepa_calibre_serializado = CalibresSerializer(cc_pepa_calibre, many=True).data
@@ -223,7 +230,13 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
         cc_merma_por_serializador = MermaPorcentajeSerializer(cc_merma_por, many=True).data
         cc_calculo_final = CalculoFinalSerializer(cc_calculo_final).data
         
-        return Response({
+
+        cc_promedio_porcentaje_muestra = PromedioMuestra(promedio_cc_muestras).data
+        cc_promedio_porcentaje_cc_pepa = PromedioPepaMuestraSerializer(promedio_por_cc_pepa).data
+        cc_promedio_porcentaje_cc_pepa_calibrada = PromedioCalibresSerializer(promedio_cc_pepa_calibrada).data
+        
+
+        return Response({   
             'cc_muestra': cc_muestra_serializado,
             'cc_pepa': cc_pepa_serializado,
             'cc_pepa_calibre': cc_pepa_calibre_serializado,
@@ -232,7 +245,10 @@ class CCRecepcionMateriaPrimaViewSet(viewsets.ModelViewSet):
             'cc_porcentaje_liquidar': cc_porcentaje_liquidar_serializado,
             'cc_kilos_des_merma': cc_kilos_desc_merma_serializado,
             'cc_merma_porc': cc_merma_por_serializador,
-            'cc_calculo_final': cc_calculo_final
+            'cc_calculo_final': cc_calculo_final,
+            'cc_promedio_porcentaje_muestras': cc_promedio_porcentaje_muestra,
+            'cc_promedio_porcentaje_cc_pepa': cc_promedio_porcentaje_cc_pepa,
+            'cc_promedio_porcentaje_cc_pepa_calibradas': cc_promedio_porcentaje_cc_pepa_calibrada,
         })
          
 
@@ -278,6 +294,30 @@ class CCTarjaResultanteViewSet(viewsets.ModelViewSet):
     queryset = CCTarjaResultante.objects.all()
     serializer_class = CCTarjaResultanteSerializer
     permission_classes = [IsAuthenticated,]
+    
+    @action(detail=False, methods=['GET'], url_path='todos_los_cdc_produccion/(?P<pk_produccion>[^/.]+)')
+    def todos_los_cdc_produccion(self, request, pk_produccion=None):
+        produccion = get_object_or_404(Produccion, pk=pk_produccion)
+        ccrecep = get_list_or_404(CCTarjaResultante, tarja__produccion = produccion)
+        serializer = self.get_serializer(ccrecep, many=True)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+    
+    
+    
+    @action(detail=False, methods=['GET'], url_path='rendimiento_tarja/(?P<pk_produccion>[^/.]+)')
+    def rendimiento_tarja(self, request, pk_produccion=None):
+        produccion = get_object_or_404(Produccion, pk=pk_produccion)
+        ccrecep = CCTarjaResultante.objects.filter(tarja__produccion = produccion).values_list('tarja', flat=True)
+        print(ccrecep)
+        # cc_ids = [cc.id for cc in ccrecep]
+        cc_pepa_calibre = cc_calibres_tarja(ccrecep)
+        cc_calibre_tarjas = CalibresResultadoSerializer(cc_pepa_calibre).data
+        
+        return Response({   
+            'cc_pepa_calibre': cc_calibre_tarjas,
+        })  
+    
+    
 
 class CCTarjaResultanteReprocesoViewSet(viewsets.ModelViewSet):
     queryset = CCTarjaResultanteReproceso.objects.all()

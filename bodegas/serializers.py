@@ -8,9 +8,13 @@ class CCGuiaInternaSerializer(serializers.ModelSerializer):
     fields = '__all__'
     
 class EnvasesPatioTechadoExtSerializer(serializers.ModelSerializer):
+  estado_envase_label = serializers.SerializerMethodField()
   class Meta:
     model = EnvasesPatioTechadoExt
     fields = '__all__'
+    
+  def get_estado_envase_label(self, obj):
+    return obj.get_estado_envase_display()
     
 class PatioTechadoExteriorSerializer(serializers.ModelSerializer):
   envases = EnvasesPatioTechadoExtSerializer(many=True, read_only=True, source='envasespatiotechadoext_set')
