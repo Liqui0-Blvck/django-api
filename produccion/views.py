@@ -207,7 +207,7 @@ class BinsEnReprocesoViewSet(viewsets.ModelViewSet):
             "tipo_bin_bodega": ct.pk,
             "reproceso": reproceso.pk
         }
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=datos)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
