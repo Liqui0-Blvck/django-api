@@ -166,26 +166,51 @@ class BinsEnReprocesoViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     
-    def create(self, request, *args, **kwargs):
-        reproceso = get_object_or_404(Reproceso, pk=self.kwargs['reproceso_pk'])
-        nombre_model = request.data.get('tipo_bin_bodega', None)
-        if nombre_model:
-            try:
-                ct = ContentType.objects.get(model=nombre_model)
-                request.data['tipo_bin_bodega'] = ct.pk
-                request.data['reproceso'] = reproceso.pk
+    # def create(self, request, *args, **kwargs):
+    #     reproceso = get_object_or_404(Reproceso, pk=self.kwargs['reproceso_pk'])
+    #     nombre_model = request.data.get('tipo_bin_bodega', None)
+    #     if nombre_model:
+    #         try:
+    #             ct = ContentType.objects.get(model=nombre_model)
+    #             request.data['tipo_bin_bodega'] = ct.pk
+    #             request.data['reproceso'] = reproceso.pk
                 
-                serializer = self.get_serializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
-                serializer.save()
-                
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            except ContentType.DoesNotExist:
-                return Response({"error": "El modelo especificado no existe."}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error": "El nombre del modelo no está presente en los datos del request."}, status=status.HTTP_400_BAD_REQUEST)
+    #             serializer = self.get_serializer(data=request.data)
+    #             serializer.is_valid(raise_exception=True)
+    #             serializer.save()
+    #             return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #         except ContentType.DoesNotExist:
+    #             return Response({"error": "El modelo especificado no existe."}, status=status.HTTP_400_BAD_REQUEST)
+    #     else:
+    #         return Response({"error": "El nombre del modelo no está presente en los datos del request."}, status=status.HTTP_400_BAD_REQUEST)
     
-
+    def create(self, request, reproceso_pk=None,*args, **kwargs):
+        reproceso = get_object_or_404(Reproceso, pk=reproceso_pk)
+        nombre_model = request.data.get('tipo_bin_bodega', None)
+        id_binbodega = request.data.get('id_bin_bodega', None)
+        if nombre_model == 'bodegag1':
+            ct = ContentType.objects.get_for_model(BodegaG1)
+            binbodega = get_object_or_404(BodegaG1, pk=id_binbodega)
+        elif nombre_model == 'bodegag2':
+            ct = ContentType.objects.get_for_model(BodegaG2)
+            binbodega = get_object_or_404(BodegaG2, pk=id_binbodega)
+        elif nombre_model == 'bodegag1reproceso':
+            ct = ContentType.objects.get_for_model(BodegaG1Reproceso)
+            binbodega = get_object_or_404(BodegaG1Reproceso, pk=id_binbodega)
+        elif nombre_model == 'bodegag2reproceso':
+            ct = ContentType.objects.get_for_model(BodegaG2Reproceso)
+            binbodega = get_object_or_404(BodegaG2Reproceso, pk=id_binbodega)
+        else:
+            return Response({"error":"No hay bin que coincida"}, status=status.HTTP_400_BAD_REQUEST)
+        datos = {
+            "id_bin_bodega": binbodega.pk,
+            "tipo_bin_bodega": ct.pk,
+            "reproceso": reproceso.pk
+        }
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class TarjaResultanteReprocesoViewSet(viewsets.ModelViewSet):
     queryset = TarjaResultanteReproceso.objects.all()

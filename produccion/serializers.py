@@ -167,21 +167,21 @@ class DetalleOperariosEnReprocesoSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class BinsEnReprocesoSerializer(serializers.ModelSerializer):
-    programa_produccion = serializers.SerializerMethodField()
+    # programa_produccion = serializers.SerializerMethodField()
     
     class Meta:
         model = BinsEnReproceso
         fields = '__all__'
         
-    def get_programa_produccion(self, obj):
-        if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2':
-            print(f'Soy de bodega normal g1 o g2 {obj.bin_bodega}')
-            # return obj.bin_bodega.produccion
-        elif obj.tipo_bin_bodega.model == 'bodegag1reproceso' or obj.tipo_bin_bodega.model == 'bodegag2reproceso':
-            print(f'Soy de reproceso {obj.bin_bodega}')
-            # return obj.bin_bodega.reproceso
+    # def get_programa_produccion(self, obj):
+    #     if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2':
+    #         print(f'Soy de bodega normal g1 o g2 {obj.bin_bodega}')
+    #         return obj.bin_bodega.produccion.pk
+    #     elif obj.tipo_bin_bodega.model == 'bodegag1reproceso' or obj.tipo_bin_bodega.model == 'bodegag2reproceso':
+    #         print(f'Soy de reproceso {obj.bin_bodega}')
+    #         return obj.bin_bodega.reproceso
     
-        return 0
+     
         
         
 class DetalleBinsEnReprocesoSerializer(serializers.ModelSerializer):
@@ -192,13 +192,14 @@ class DetalleBinsEnReprocesoSerializer(serializers.ModelSerializer):
         
     def get_programa_produccion(self, obj):
         if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2':
-            print(f'Soy de bodega normal g1 o g2 {obj.bin_bodega.produccion}')
-            # return obj.bin_bodega
+            if not obj.bin_bodega.produccion:
+                print("error", obj)
+            else:
+                return obj.bin_bodega.produccion.pk
+        
         elif obj.tipo_bin_bodega.model == 'bodegag1reproceso' or obj.tipo_bin_bodega.model == 'bodegag2reproceso':
-            print(f'Soy de reproceso {obj.bin_bodega}')
-            # return obj.bin_bodega.reproceso
-    
-        return 0
+            return obj.bin_bodega.reproceso.pk
+
         
         
 class TarjaResultanteReprocesoSerializer(serializers.ModelSerializer):

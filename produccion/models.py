@@ -120,7 +120,7 @@ class OperariosEnReproceso(ModeloBase):
 class BinsEnReproceso(ModeloBaseHistorico):
     reproceso           = models.ForeignKey(Reproceso, on_delete=models.CASCADE)
     limite_opciones     = models.Q(app_label = 'bodegas', model = 'bodegag1') | models.Q(app_label = 'bodegas', model = 'bodegag2') | models.Q(app_label = 'bodegas', model = 'bodegag1reproceso') | models.Q(app_label = 'bodegas', model = 'bodegag2reproceso')
-    tipo_bin_bodega     = models.ForeignKey('contenttypes.ContentType', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to=limite_opciones)
+    tipo_bin_bodega     = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE, limit_choices_to=limite_opciones)
     id_bin_bodega       = models.PositiveIntegerField()
     bin_bodega          = GenericForeignKey('tipo_bin_bodega', 'id_bin_bodega')
     bin_procesado       = models.BooleanField(default=False)
