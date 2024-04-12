@@ -195,7 +195,7 @@ class DetalleBinsEnReprocesoSerializer(serializers.ModelSerializer):
             return obj.bin_bodega.produccion.pk
         
         elif obj.tipo_bin_bodega.model == 'bodegag1reproceso' or obj.tipo_bin_bodega.model == 'bodegag2reproceso':
-            return obj.bin_bodega.reproceso.pk
+            return obj.bin_bodega.reproceso.reproceso.pk
 
         
         
