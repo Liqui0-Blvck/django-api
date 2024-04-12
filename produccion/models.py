@@ -77,7 +77,7 @@ class TarjaResultante(ModeloBaseHistorico):
         verbose_name_plural = "1.3 - Tarjas Resultantes"
 
     def __str__(self):
-        return '%s'%(self.codigo_tarja)
+        return '%s'%(self.codigo_tarja) 
 
 class Reproceso(ModeloBaseHistorico):
     estado                  = models.CharField(max_length=1, choices=ESTADOS_REPROCESO, default="0")
