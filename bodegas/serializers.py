@@ -54,6 +54,7 @@ class BinBodegaSerializer(serializers.ModelSerializer):
       model = BinBodega
       fields = '__all__'
       
+      
     
   def get_programa_produccion(self, obj):
     if obj.tipo_binbodega.model == 'bodegag1' or obj.tipo_binbodega.model == 'bodegag2' or obj.tipo_binbodega.model == 'bodegaresiduos':

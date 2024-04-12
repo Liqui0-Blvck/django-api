@@ -37,10 +37,18 @@ class DetalleProduccionSerializer(serializers.ModelSerializer):
 
 
 class LotesProgramaSerializer(serializers.ModelSerializer):
-    
+    numero_lote = serializers.SerializerMethodField()
+
     class Meta:
         model = LotesPrograma
         fields = '__all__'
+        
+    def get_numero_lote(self, obj):
+        if obj.bodega_techado_ext.guia_patio.tipo_recepcion.model == 'recepcionmp':
+            recepcion = RecepcionMp.objects.filter(pk = obj.bodega_techado_ext.guia_patio.id_recepcion).first().numero_lote
+            return recepcion
+        else:
+            return None
         
 class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
     numero_lote = serializers.SerializerMethodField()
@@ -50,6 +58,7 @@ class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
     variedad = serializers.SerializerMethodField()
     guia_recepcion = serializers.SerializerMethodField()
     control_calidad = serializers.SerializerMethodField()
+    
     
     
     class Meta:
@@ -179,10 +188,19 @@ class BinsEnReprocesoSerializer(serializers.ModelSerializer):
 class DetalleBinsEnReprocesoSerializer(serializers.ModelSerializer):
     programa_produccion = serializers.SerializerMethodField()
     kilos_bin = serializers.SerializerMethodField()
+    identificador_bin_bodega = serializers.SerializerMethodField()
     
     class Meta:
         model = BinsEnReproceso
         fields = '__all__'
+        
+    def get_identificador_bin_bodega(self, obj):
+        if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2' or obj.tipo_bin_bodega.model == 'bodegaresiduos':
+            return obj.bin_bodega.produccion.id
+        elif obj.tipo_bin_bodega.model == 'bodegag1reproceso' or obj.tipo_bin_bodega.model == 'bodegag2reproceso' or obj.tipo_bin_bodega.model == 'bodegaresiduosreproceso':
+            return obj.bin_bodega.reproceso.id
+        else:
+            return obj.pk
         
     def get_kilos_bin(self, obj):
         if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2':

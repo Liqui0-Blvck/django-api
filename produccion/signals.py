@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from .models import *
 from django.dispatch import receiver
 from recepcionmp.models import RecepcionMp, EnvasesGuiaRecepcionMp
@@ -15,6 +15,11 @@ def cambio_estado_lote_programa(sender, created, instance, **kwargs):
         instance.bin_ingresado = True
         instance.save()
         
+@receiver(post_delete, sender=LotesPrograma)
+def cambio_estado_lote_al_eliminar(sender, instance, **kwargs):
+    if instance:
+        EnvasesPatioTechadoExt.objects.filter(pk = instance.bodega_techado_ext.id).update(estado_envase = '1')
+        print(instance)
         
 
 
@@ -45,15 +50,15 @@ def vincula_resultante_reproceso_bodega_rs_g1_g2(sender, created, instance, **kw
     if created and instance:
         if instance.tipo_resultante == '3':
             BodegaG2Reproceso.objects.update_or_create(reproceso=instance, kilos_fruta=instance.peso)
-            codigo = str('G2R-')+random_codigo_tarja()
+            codigo = str('G2-')+random_codigo_tarja()
             instance.codigo_tarja = codigo
         elif instance.tipo_resultante == '2':
             BodegaResiduosReproceso.objects.update_or_create(reproceso=instance, kilos_residuo=instance.peso)
-            codigo = str('RSR-')+random_codigo_tarja()
+            codigo = str('RS-')+random_codigo_tarja()
             instance.codigo_tarja = codigo
         elif instance.tipo_resultante == '1':
             BodegaG1Reproceso.objects.update_or_create(reproceso=instance, kilos_fruta=instance.peso)
-            codigo = str('G1R-')+random_codigo_tarja()
+            codigo = str('G1-')+random_codigo_tarja()
             instance.codigo_tarja = codigo
         instance.save()
         

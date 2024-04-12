@@ -77,20 +77,26 @@ class LotesProgramaViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'], url_path='registrar_lotes/(?P<pks_lotes>[^/.]+)')
     def registrar_lotes(self, request, pks_lotes=None, produccion_pk=None):
         pks_list = pks_lotes.split(',')
-    
-        for x in pks_list:
-            envase = get_object_or_404(EnvasesPatioTechadoExt, pk = x)
-            produccion = get_object_or_404(Produccion, pk = produccion_pk)
-            LotesPrograma.objects.update_or_create(produccion = produccion, bodega_techado_ext = envase)
-            # try:
-            # except:
-            #     pks_invalidos = []
-            #     pks_invalidos.append(x)
-            #     return Response({ 'message': 'Fue mal', 'pks_invalidos': pks_invalidos},  status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+        produccion = get_object_or_404(Produccion, pk = produccion_pk)
+        LotesPrograma.objects.update_or_create(produccion = produccion, bodega_techado_ext__in = list(pks_list))
         return Response({ 'message': 'Creado con exito'}, status=status.HTTP_201_CREATED)
+    
+    @action(detail=False, methods=['DELETE'], url_path='eliminar_lotes/(?P<pks_lotes>[^/.]+)')  
+    def eliminar_lotes(self, request, pks_lotes=None, produccion_pk=None):
+        pks_list = pks_lotes.split(',')
+        produccion = get_object_or_404(Produccion,pk = produccion_pk)
+        LotesPrograma.objects.filter(produccion = produccion, bodega_techado_ext__in = list(pks_list)).delete()
+        return Response({ 'message': 'Lote Eliminado con exito'})
+    
+    @action(detail=False, methods=['PUT', 'PATCH'], url_path='actualizar_estados_lotes/(?P<pks_lotes>[^/.]+)')
+    def actualizar_estados_lotes(self, request, pks_lotes=None, produccion_pk=None):
+        pks_list = pks_lotes.split(',')
+        produccion = get_object_or_404(Produccion,pk = produccion_pk)
+        LotesPrograma.objects.filter(produccion = produccion, bodega_techado_ext__in = list(pks_list)).update(bin_procesado = True)
+        return Response({ 'message': 'Lote Actualizados con exito'})
+    
         
-
+              
 class TarjaResultanteViewSet(viewsets.ModelViewSet):
     queryset = TarjaResultante.objects.all()
     serializer_class = TarjaResultanteSerializer
@@ -146,15 +152,6 @@ class BinsEnReprocesoViewSet(viewsets.ModelViewSet):
     
     def retrieve(self, request,reproceso_pk=None, pk=None):
         reproceso = get_object_or_404(Reproceso, pk=reproceso_pk)
-        # ct_g1 = ContentType.objects.get_for_model(BodegaG1)
-        # ct_g2 = ContentType.objects.get_for_model(BodegaG2)
-        # ct_g1r = ContentType.objects.get_for_model(BodegaG1Reproceso)
-        # ct_g2r = ContentType.objects.get_for_model(BodegaG2Reproceso)
-        
-        # # data = {
-        # #     "reproceso": reproceso.pk,
-        # #     "tipo_bin_bodega":
-        # # }
         produccion = get_object_or_404(self.get_queryset(),reproceso=reproceso, pk=pk)
         serializer = self.get_serializer(produccion)
         return Response(serializer.data)
@@ -165,25 +162,7 @@ class BinsEnReprocesoViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    
-    # def create(self, request, *args, **kwargs):
-    #     reproceso = get_object_or_404(Reproceso, pk=self.kwargs['reproceso_pk'])
-    #     nombre_model = request.data.get('tipo_bin_bodega', None)
-    #     if nombre_model:
-    #         try:
-    #             ct = ContentType.objects.get(model=nombre_model)
-    #             request.data['tipo_bin_bodega'] = ct.pk
-    #             request.data['reproceso'] = reproceso.pk
-                
-    #             serializer = self.get_serializer(data=request.data)
-    #             serializer.is_valid(raise_exception=True)
-    #             serializer.save()
-    #             return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #         except ContentType.DoesNotExist:
-    #             return Response({"error": "El modelo especificado no existe."}, status=status.HTTP_400_BAD_REQUEST)
-    #     else:
-    #         return Response({"error": "El nombre del modelo no está presente en los datos del request."}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def create(self, request, reproceso_pk=None,*args, **kwargs):
         reproceso = get_object_or_404(Reproceso, pk=reproceso_pk)
         nombre_model = request.data.get('tipo_bin_bodega', None)
