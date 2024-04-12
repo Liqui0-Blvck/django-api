@@ -17,15 +17,15 @@ TIPOS_OPERARIO = (
 )
 
       
-ESTILO_CHOICES = [
-    ('light-theme', 'Tema Claro'),
-    ('dark-theme', 'Tema Oscuro'),
+ESTILO_CHOICES = (
+    ('light', 'Tema Claro'),
+    ('dark', 'Tema Oscuro'),
     ('semi-dark', 'Semi Oscuro'),
     ('minimal-theme', 'Tema Minimal'),
     
-]
+)
 
-CABECERA_CHOICES = [
+CABECERA_CHOICES = (
     ('1', 'Azul'),
     ('2', 'Negro'),
     ('3', 'Rojo'),
@@ -35,9 +35,9 @@ CABECERA_CHOICES = [
     ('8', 'Fucsia'),
     ('9', 'Naranjo'),
     
-]
+)
 
-CARGOS_PERFILES = [
+CARGOS_PERFILES = (
     ('1', 'RecepcionMP'),
     ('2', 'CDC Jefatura'),
     ('3', 'CDC Operario MP'),
@@ -47,4 +47,12 @@ CARGOS_PERFILES = [
     ('7', 'Seleccion'),
     ('8', 'Seleccion Admin'),
     
-]
+)
+
+ANIO = (
+    ('2025', '2025'),
+    ('2024', '2024'),
+    ('2023', '2023'),
+    ('2022', '2022'),
+    ('2021', '2021'),
+)

@@ -11,7 +11,7 @@ class PerfilViewSet(viewsets.ModelViewSet):
     queryset = Perfil.objects.all()
     serializer_class = PerfilSerializer
     lookup_field = 'user'
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
 class ColosoViewSet(viewsets.ModelViewSet):
 
@@ -73,10 +73,10 @@ class CamionViewSet(viewsets.ModelViewSet):
     serializer_class = CamionSerializer
     # permission_classes = [IsAuthenticated]
 
-class UserAPIView(generics.RetrieveAPIView):
+class UserAPIView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     lookup_field = 'id'
-    http_method_names = ['get']
+    http_method_names = ['get', 'put']
     serializer_class = UserSerializer
 
 
@@ -84,3 +84,9 @@ class UserAPIView(generics.RetrieveAPIView):
 class CargoPerfilViewSet(viewsets.ModelViewSet):
     queryset = CargoPerfil.objects.all()
     serializer_class = CargoPerfilSerializer
+    
+class PersonalizacionPerfilViewSet(viewsets.ModelViewSet):
+    queryset = PersonalizacionPerfil.objects.all()
+    serializer_class = PersonalizacionPerfilSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'user'

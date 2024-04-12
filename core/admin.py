@@ -26,8 +26,8 @@ class PerfilesDeUsuarios(ImportExportModelAdmin):
     pass
 admin.site.register(Perfil, PerfilesDeUsuarios)
 
-@admin.register(CambioEstiloSitio)
-class CambioEstiloSitioAdmin(admin.ModelAdmin):
+@admin.register(PersonalizacionPerfil)
+class PersonalizacionPerfilAdmin(admin.ModelAdmin):
     field = ['activa', 'estilo']
 
 
