@@ -57,9 +57,9 @@ class BinBodegaSerializer(serializers.ModelSerializer):
     
   def get_programa_produccion(self, obj):
     if obj.tipo_binbodega.model == 'bodegag1' or obj.tipo_binbodega.model == 'bodegag2' or obj.tipo_binbodega.model == 'bodegaresiduos':
-      return obj.binbodega.produccion.id
+      return obj.binbodega.produccion.produccion.id
     elif obj.tipo_binbodega.model == 'bodegag1reproceso' or obj.tipo_binbodega.model == 'bodegag2reproceso' or obj.tipo_binbodega.model == 'bodegaresiduosreproceso':
-      return obj.binbodega.reproceso.id
+      return obj.binbodega.reproceso.reproceso.id
     else:
       return obj.pk
     
@@ -87,7 +87,7 @@ class DetalleBinBodegaSerializer(serializers.ModelSerializer):
     if obj.tipo_binbodega.model == 'bodegag1' or obj.tipo_binbodega.model == 'bodegag2' or obj.tipo_binbodega.model == 'bodegaresiduos':
       return obj.binbodega.produccion.produccion.pk
     elif obj.tipo_binbodega.model == 'bodegag1reproceso' or obj.tipo_binbodega.model == 'bodegag2reproceso' or obj.tipo_binbodega.model == 'bodegaresiduosreproceso':
-      return obj.binbodega.reproceso.pk
+      return obj.binbodega.reproceso.reproceso.pk
     else:
       return None
     
