@@ -167,28 +167,30 @@ class DetalleOperariosEnReprocesoSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class BinsEnReprocesoSerializer(serializers.ModelSerializer):
-    # programa_produccion = serializers.SerializerMethodField()
     
     class Meta:
         model = BinsEnReproceso
         fields = '__all__'
         
-    # def get_programa_produccion(self, obj):
-    #     if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2':
-    #         print(f'Soy de bodega normal g1 o g2 {obj.bin_bodega}')
-    #         return obj.bin_bodega.produccion.pk
-    #     elif obj.tipo_bin_bodega.model == 'bodegag1reproceso' or obj.tipo_bin_bodega.model == 'bodegag2reproceso':
-    #         print(f'Soy de reproceso {obj.bin_bodega}')
-    #         return obj.bin_bodega.reproceso
     
      
         
         
 class DetalleBinsEnReprocesoSerializer(serializers.ModelSerializer):
     programa_produccion = serializers.SerializerMethodField()
+    kilos_bin = serializers.SerializerMethodField()
+    
     class Meta:
         model = BinsEnReproceso
         fields = '__all__'
+        
+    def get_kilos_bin(self, obj):
+        if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2':
+            return obj.bin_bodega.kilos_fruta
+        elif obj.tipo_bin_bodega.model == 'bodegaresiduos':
+            return obj.bin_bodega.kilos_residuo
+        else:
+            return 0
         
     def get_programa_produccion(self, obj):
         if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2':
