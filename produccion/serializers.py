@@ -194,10 +194,7 @@ class DetalleBinsEnReprocesoSerializer(serializers.ModelSerializer):
         
     def get_programa_produccion(self, obj):
         if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2':
-            if not obj.bin_bodega.produccion:
-                print("error", obj)
-            else:
-                return obj.bin_bodega.produccion.produccion.pk
+            return obj.bin_bodega.produccion.produccion.pk
         
         elif obj.tipo_bin_bodega.model == 'bodegag1reproceso' or obj.tipo_bin_bodega.model == 'bodegag2reproceso':
             return obj.bin_bodega.reproceso.reproceso.pk
