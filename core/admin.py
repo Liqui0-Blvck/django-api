@@ -9,6 +9,7 @@ admin.site.unregister(Group)
 admin.site.unregister(User)
 admin.site.register(Chofer)
 admin.site.register(Camion)
+admin.site.register(CargoPerfil)
 
 class ImportacionDeGrupos(ImportExportModelAdmin):
     pass 
