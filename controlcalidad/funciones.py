@@ -1,6 +1,7 @@
 from django import template
 from .models import *
 from recepcionmp.models import RecepcionMp, EnvasesGuiaRecepcionMp
+from produccion.models import *
 from controlcalidad.models import CCRecepcionMateriaPrima, CCRendimiento, CCPepa
 from django.db.models import Sum, Avg, F, ExpressionWrapper, FloatField, Value
 
@@ -530,64 +531,130 @@ def promedio_porcentaje_calibres(lista_calibres):
         }
         
         
-def cc_calibres_tarja(lista_cdc_tarja):
-    totales_por_calibre = {
-        'Sin Calibre': 0,
-        'PreCalibre': 0,
-        '18/20': 0,
-        '20/22': 0,
-        '23/25': 0,
-        '25/27': 0,
-        '27/30': 0,
-        '30/32': 0,
-        '32/34': 0,
-        '34/36': 0,
-        '36/40': 0,
-        '40+': 0,
-    }
-    cc_tarja = CCTarjaResultante.objects.filter(tarja__id__in=lista_cdc_tarja)
-    print(cc_tarja)
+        
+def consulta_kilos_tarjas_res(pkproduccion):
+    # Filtrar por tipo_resultante igual a 2 y calcular la suma de peso menos tipo_patineta
+    tarjasres = TarjaResultante.objects.filter(produccion=pkproduccion).aggregate(kilos=Sum(F('peso') - F('tipo_patineta')))['kilos']
+    tarja_res_residuo = TarjaResultante.objects.filter(produccion=pkproduccion, tipo_resultante = '2').aggregate(kilos=Sum(F('peso') - F('tipo_patineta')))['kilos']
+    return tarjasres - tarja_res_residuo
+
+def consulta_muestras_tarjasresultantes_cdc_pepabruta(listalotes):
+    controlesrendimientos = CCTarjaResultante.objects.filter(tarja__in=listalotes)
+    avg_trozo = controlesrendimientos.aggregate(promedio=Avg('trozo'))['promedio']
+    avg_picada = controlesrendimientos.aggregate(promedio=Avg('picada'))['promedio']
+    avg_hongo      = controlesrendimientos.aggregate(promedio=Avg('hongo'))['promedio']
+    avg_danoinsect = controlesrendimientos.aggregate(promedio=Avg('daño_insecto'))['promedio']
+    avg_dobles      = controlesrendimientos.aggregate(promedio=Avg('dobles'))['promedio']
+    avg_goma      = controlesrendimientos.aggregate(promedio=Avg('goma'))['promedio']
+    avg_basura = controlesrendimientos.aggregate(promedio=Avg('basura'))['promedio']
+    avg_mezclavari = controlesrendimientos.aggregate(promedio=Avg('mezcla_variedad'))['promedio']
+    avg_fueracolor = controlesrendimientos.aggregate(promedio=Avg('fuera_color'))['promedio']
+    avg_puntogoma = controlesrendimientos.aggregate(promedio=Avg('punto_goma'))['promedio']
+    avg_pepasana = controlesrendimientos.aggregate(promedio=Avg('pepa_sana'))['promedio']
+    #avg_calibre_2325 = controlesrendimientos.filter(calibre='4').aggregate(promedio=Avg('pepa_sana'))['promedio']
     
+    
+    if not avg_trozo or not avg_picada or not avg_hongo or not avg_danoinsect or not avg_dobles or not avg_goma or not avg_basura or not avg_mezclavari or not avg_fueracolor or not avg_puntogoma or not avg_pepasana:
+        trozo = 0
+        picada = 0
+        hongo = 0
+        danoinsec = 0
+        dobles = 0
+        goma = 0
+        basura = 0
+        mezclavarie = 0
+        fueracolor = 0
+        puntogoma = 0
+        pepasana = 0
+    else:
+        totalmuestras =  avg_trozo + avg_picada + avg_hongo + avg_danoinsect + avg_dobles + avg_goma + avg_basura + avg_mezclavari + avg_fueracolor + avg_puntogoma + avg_pepasana
+        
+        trozo = avg_trozo/totalmuestras*100
+        picada = avg_picada/totalmuestras*100
+        hongo = avg_hongo/totalmuestras*100
+        danoinsec = avg_danoinsect/totalmuestras*100
+        dobles = avg_dobles/totalmuestras*100
+        goma = avg_goma/totalmuestras*100
+        basura = avg_basura/totalmuestras*100
+        mezclavarie = avg_mezclavari/totalmuestras*100
+        fueracolor = avg_fueracolor/totalmuestras*100
+        puntogoma = avg_puntogoma/totalmuestras*100
+        pepasana = avg_pepasana/totalmuestras*100
+        
+    return [trozo, picada, hongo, danoinsec, dobles, goma, basura, mezclavarie, fueracolor, puntogoma, pepasana] 
+        
+        
+def consulta_tarjasresultantes_en_produccion(pkproduccion):
+    produccion = Produccion.objects.get(pk=pkproduccion)
+    pkstarjas = []
+    pksunicos = []
+    for x in produccion.tarjaresultante_set.all():
+        pkstarjas.append(x.pk)
+        [pksunicos.append(y) for y in pkstarjas if y not in pksunicos]
+    return pksunicos
 
-    for categoria, calibres in CALIBRES:
-        for calibre, nombre_calibre in calibres:
-            for cc in cc_tarja:
-                # print(cc)
-                if cc.calibre == calibre:
-                    # Verificar si los campos tienen valores None y asignar 0 si es así
-                    trozo = cc.trozo if cc.trozo is not None else 0
-                    picada = cc.picada if cc.picada is not None else 0
-                    hongo = cc.hongo if cc.hongo is not None else 0
-                    daño_insecto = cc.daño_insecto if cc.daño_insecto is not None else 0
-                    dobles = cc.dobles if cc.dobles is not None else 0
-                    goma = cc.goma if cc.goma is not None else 0
-                    basura = cc.basura if cc.basura is not None else 0
-                    mezcla_variedad = cc.mezcla_variedad if cc.mezcla_variedad is not None else 0
-                    pepa_sana = cc.pepa_sana if cc.pepa_sana is not None else 0
-                    fuera_color = cc.fuera_color if cc.fuera_color is not None else 0
-                    punto_goma = cc.punto_goma if cc.punto_goma is not None else 0
-                    vana_deshidratada = cc.vana_deshidratada if cc.vana_deshidratada is not None else 0
-                    
-                    # Calcular el total y sumarlo al total por calibre
-                    total_calibre = (trozo + picada + hongo + daño_insecto + dobles + goma +
-                                     basura + mezcla_variedad + pepa_sana + fuera_color +
-                                     punto_goma + vana_deshidratada)
-                    totales_por_calibre[nombre_calibre] += total_calibre
-                    
-                
 
-    # Devolver el diccionario serializado
+def consulta_muestras_tarjasresultantes_cdc_calibres(listalotes):
+    tarja_res = TarjaResultante.objects.filter(pk__in=listalotes)
+    
+    kilos_sin_calibre = 0    
+    kilos_precalibre = 0
+    kilos_18_20 = 0
+    kilos_20_22 = 0
+    kilos_23_25 = 0
+    kilos_25_27 = 0
+    kilos_27_30 = 0
+    kilos_30_32 = 0
+    kilos_32_34 = 0
+    kilos_34_36 = 0
+    kilos_36_40 = 0
+    kilos_40_mas = 0
+    
+    for x in tarja_res:
+        try:
+            cc_tarja = CCTarjaResultante.objects.get(tarja=x.pk)
+        except:
+            cc_tarja = None
+        
+        if cc_tarja != None:
+            if cc_tarja.calibre == '0':
+                kilos_sin_calibre += x.peso -x.tipo_patineta
+            elif cc_tarja.calibre == '1':
+                kilos_precalibre += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '2':
+                kilos_18_20 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '3':
+                kilos_20_22 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '4':
+                kilos_23_25 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '5':
+                kilos_25_27 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '6':
+                kilos_27_30 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '7':
+                kilos_30_32 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '8':
+                kilos_32_34 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '9':
+                kilos_34_36 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '10':
+                kilos_36_40 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '11':
+                kilos_40_mas += x.peso - x.tipo_patineta
+        
     return {
-            'sincalibre': totales_por_calibre['Sin Calibre'],
-            'precalibre': totales_por_calibre['PreCalibre'],
-            'calibre_18_20': totales_por_calibre['18/20'],
-            'calibre_20_22': totales_por_calibre['20/22'],
-            'calibre_23_25': totales_por_calibre['23/25'],
-            'calibre_25_27': totales_por_calibre['25/27'],
-            'calibre_27_30': totales_por_calibre['27/30'],
-            'calibre_30_32': totales_por_calibre['30/32'],
-            'calibre_32_34': totales_por_calibre['32/34'],
-            'calibre_34_36': totales_por_calibre['34/36'],
-            'calibre_36_40': totales_por_calibre['36/40'],
-            'calibre_40_mas': totales_por_calibre['40+']
+            'sincalibre': kilos_sin_calibre,
+            'precalibre': kilos_precalibre,
+            'calibre_18_20': kilos_18_20,
+            'calibre_20_22': kilos_20_22,
+            'calibre_23_25': kilos_23_25,
+            'calibre_25_27': kilos_25_27,
+            'calibre_27_30': kilos_27_30,
+            'calibre_30_32': kilos_30_32,
+            'calibre_32_34': kilos_32_34,
+            'calibre_34_36': kilos_34_36,
+            'calibre_36_40': kilos_36_40,
+            'calibre_40_mas': kilos_40_mas
             }
+
+    

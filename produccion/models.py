@@ -77,7 +77,7 @@ class TarjaResultante(ModeloBaseHistorico):
         verbose_name_plural = "1.3 - Tarjas Resultantes"
 
     def __str__(self):
-        return '%s'%(self.codigo_tarja)
+        return '%s'%(self.codigo_tarja) 
 
 class Reproceso(ModeloBaseHistorico):
     estado                  = models.CharField(max_length=1, choices=ESTADOS_REPROCESO, default="0")
@@ -120,7 +120,7 @@ class OperariosEnReproceso(ModeloBase):
 class BinsEnReproceso(ModeloBaseHistorico):
     reproceso           = models.ForeignKey(Reproceso, on_delete=models.CASCADE)
     limite_opciones     = models.Q(app_label = 'bodegas', model = 'bodegag1') | models.Q(app_label = 'bodegas', model = 'bodegag2') | models.Q(app_label = 'bodegas', model = 'bodegag1reproceso') | models.Q(app_label = 'bodegas', model = 'bodegag2reproceso')
-    tipo_bin_bodega     = models.ForeignKey('contenttypes.ContentType', on_delete=models.SET_NULL, null=True, blank=True, limit_choices_to=limite_opciones)
+    tipo_bin_bodega     = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE, limit_choices_to=limite_opciones)
     id_bin_bodega       = models.PositiveIntegerField()
     bin_bodega          = GenericForeignKey('tipo_bin_bodega', 'id_bin_bodega')
     bin_procesado       = models.BooleanField(default=False)

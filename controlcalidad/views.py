@@ -306,20 +306,22 @@ class CCTarjaResultanteViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['GET'], url_path='rendimiento_tarja/(?P<pk_produccion>[^/.]+)')
     def rendimiento_tarja(self, request, pk_produccion=None):
-        produccion = get_object_or_404(Produccion, pk=pk_produccion)
-        ccrecep = CCTarjaResultante.objects.filter(tarja__produccion = produccion).values_list('tarja', flat=True)
-        print(ccrecep)
-        # cc_ids = [cc.id for cc in ccrecep]
-        cc_pepa_calibre = cc_calibres_tarja(ccrecep)
-        cc_calibre_tarjas = CalibresResultadoSerializer(cc_pepa_calibre).data
+        lotes_list = consulta_tarjasresultantes_en_produccion(pk_produccion)
+        calibres = consulta_muestras_tarjasresultantes_cdc_calibres(lotes_list)
+        consulta_kilos = consulta_kilos_tarjas_res(pk_produccion)
+        print("consulta kilo", consulta_kilos)
         
-        return Response({   
+        cc_calibre_tarjas = CalibresResultadoSerializer(calibres).data
+        
+        return Response({
+            'pepa_resultante': consulta_kilos,
             'cc_pepa_calibre': cc_calibre_tarjas,
-        })  
-    
+        })
+        
     
 
 class CCTarjaResultanteReprocesoViewSet(viewsets.ModelViewSet):
+    lookup_field = 'tarja'
     queryset = CCTarjaResultanteReproceso.objects.all()
     serializer_class = CCTarjaResultanteReprocesoSerializer
     permission_classes = [IsAuthenticated,]

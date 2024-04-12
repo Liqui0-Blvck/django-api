@@ -61,7 +61,7 @@ ESTADOS_PRODUCCION = (
     ('0','Producción Pausada'),
     ('1','Proceso Registrado, Esperando Inicio'),
     ('2','En Proceso'),
-    ('3','En Reproceso'),
+    ('3','En Reproceso'),   
     ('4','Terminado, en Espera Resultados'),
     ('5','Proceso Completado y Cerrado'),
 )

@@ -59,7 +59,7 @@ class EnvasesPatioTechadoExt(ModeloBase):
         return "%s"% self.pk
         
 class BinBodega(ModeloBaseHistorico):
-    limite_opciones         = models.Q(app_label = 'bodegas', model = 'bodegag1') | models.Q(app_label = 'bodegas', model = 'bodegag1reproceso') | models.Q(app_label = 'bodegas', model = 'bodegag2') | models.Q(app_label = 'bodegas', model = 'bodegag2reproceso') 
+    limite_opciones         = models.Q(app_label = 'bodegas', model = 'bodegag1') | models.Q(app_label = 'bodegas', model = 'bodegag1reproceso') | models.Q(app_label = 'bodegas', model = 'bodegag2') | models.Q(app_label = 'bodegas', model = 'bodegag2reproceso') | models.Q(app_label = 'bodegas', model = 'bodegaresiduos') | models.Q(app_label = 'bodegas', model = 'bodegag2reproceso')
     tipo_binbodega          = models.ForeignKey('contenttypes.ContentType', on_delete=models.SET_NULL, null=True, limit_choices_to = limite_opciones)
     id_binbodega            = models.PositiveIntegerField()
     binbodega               = GenericForeignKey('tipo_binbodega', 'id_binbodega')
