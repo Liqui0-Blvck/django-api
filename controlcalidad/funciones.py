@@ -1,9 +1,9 @@
 from django import template
 from .models import *
 from recepcionmp.models import RecepcionMp, EnvasesGuiaRecepcionMp
+from produccion.models import *
 from controlcalidad.models import CCRecepcionMateriaPrima, CCRendimiento, CCPepa
-from django.db.models import Sum, Avg, F
-
+from django.db.models import Sum, Avg, F, ExpressionWrapper, FloatField, Value
 
 def busca_dic(id, list_dic):
     diccionario = None
@@ -59,12 +59,9 @@ def cc_pepa_lote(lista_lotes):
     cc_lotes = CCRecepcionMateriaPrima.objects.filter(recepcionmp__in=lista_lotes)
     
     for x in cc_lotes:
-        print(x)
         cc_rendimiento = CCRendimiento.objects.filter(cc_recepcionmp=x.pk)
-        print(cc_rendimiento)
         cc_pepa = CCPepa.objects.filter(cc_rendimiento__in=cc_rendimiento)
-        
-        print(cc_pepa)
+
         
         prom_pepabruta = cc_rendimiento.aggregate(total=Avg('pepa'))['total']
         prom_muestra_variedad = cc_pepa.aggregate(total=Avg('muestra_variedad'))['total']
@@ -115,7 +112,6 @@ def cc_pepa_calibres_lote(lista_lotes):
             cc_rendimiento = cc_rendimiento.order_by('-pk').order_by('-id').first()
             
             cc_pepa = CCPepa.objects.get(cc_rendimiento=cc_rendimiento.pk)
-            print(cc_pepa)
             lista_calibres.append(cc_pepa.pre_calibre if cc_pepa.pre_calibre is not None else 0)
             lista_calibres.append(cc_pepa.calibre_18_20 if cc_pepa.calibre_18_20 is not None else 0)
             lista_calibres.append(cc_pepa.calibre_20_22 if cc_pepa.calibre_20_22 is not None else 0)
@@ -172,7 +168,7 @@ def cc_pepa_calibres_lote(lista_lotes):
             'calibre_25_27': 0,
             'calibre_27_30': 0,
             'calibre_30_32': 0,
-            'calibre_32_34': 0,
+            'calibre_32_34': 0, 
             'calibre_34_36': 0,
             'calibre_36_40': 0,
             'calibre_40_mas': 0
@@ -365,10 +361,6 @@ def calculo_final(lista_muestras, lista_merma, lista_descontados, lista_kilos):
         descontado = busca_dic(x['cc_lote'], lista_descontados)
         kilos_desc = busca_dic(x['cc_lote'], lista_kilos)
 
-        print("soy la merma", merma)
-        print(descontado)
-        print(kilos_desc)
-
         netos = calcula_netos_lote(lote.recepcionmp.pk)
         brutos = x['pepa_bruta'] * netos / 100
         
@@ -397,34 +389,42 @@ def calculo_final(lista_muestras, lista_merma, lista_descontados, lista_kilos):
 
 
 def promedio_porcentaje_muestras(lista_muestras):
+    netos_totales = 0
     if len(lista_muestras) > 0:
         basura = [0]
         pelon = [0]
         ciega = [0]
         cascara = [0]
         pepa_huerto = [0]
-        pepa_bruta = [0]
+        pepa_bruta = 0
         for x in lista_muestras:
+            lote = CCRecepcionMateriaPrima.objects.get(pk=x['cc_lote'])
             basura.append(x['basura'])
             pelon.append(x['pelon'])
             ciega.append(x['ciega'])
             cascara.append(x['cascara'])
             pepa_huerto.append(x['pepa_huerto'])
-            pepa_bruta.append(x['pepa_bruta'])
+            netos_totales += calcula_netos_lote(lote.recepcionmp.pk)
+            netos = calcula_netos_lote(lote.recepcionmp.pk)
+            brutos = x['pepa_bruta'] * netos / 100
+            pepa_bruta += round(brutos, 1)
+
+        
         
         prom_basura = sum(basura)/len(basura)
         prom_pelon = sum(pelon)/len(pelon)
         prom_ciega = sum(ciega)/len(ciega)
         prom_cascara = sum(cascara)/len(cascara)
         prom_pepa_huerto = sum(pepa_huerto)/len(pepa_huerto)
-        prom_pepa_bruta = sum(pepa_bruta)/len(pepa_bruta)
+        prom_pepa_bruta = (pepa_bruta / netos_totales) * 100
         
-        return [round(prom_basura, 1), round(prom_pelon, 1), round(prom_ciega, 1), round(prom_cascara, 1), round(prom_pepa_huerto, 1), round(prom_pepa_bruta, 1)]
+        
+        return {'basura':round(prom_basura, 2), 'pelon':round(prom_pelon, 2), 'ciega':round(prom_ciega, 2), 'cascara':round(prom_cascara, 2), 'pepa_huerto':round(prom_pepa_huerto, 2), 'pepa_bruta':round(prom_pepa_bruta, 3)}
     else:
-        return [0, 0, 0, 0, 0, 0]
-
+        return {'basura':0, 'pelon':0, 'ciega':0, 'cascara':0, 'pepa_huerto':0, 'pepa_bruta':0}
 
 def promedio_porcentaje_cc_pepa(lista_cc_pepa):
+
     if len(lista_cc_pepa) > 0:
         mezcla = []
         insecto = []
@@ -454,9 +454,10 @@ def promedio_porcentaje_cc_pepa(lista_cc_pepa):
         prom_pgoma = sum(pgoma)/len(pgoma)
         prom_goma = sum(goma)/len(goma)
         
-        return [round(prom_mezcla, 1), round(prom_insecto, 1), round(prom_hongo, 1), round(prom_dobles, 1), round(prom_color, 1), round(prom_vana, 1), round(prom_pgoma, 1), round(prom_goma, 1)]
+        return {'mezcla': round(prom_mezcla, 2), 'insecto': round(prom_insecto, 2), 'hongo': round(prom_hongo, 2), 'dobles': round(prom_dobles, 2), 'color': round(prom_color, 2), 'vana': round(prom_vana, 2), 'pgoma': round(prom_pgoma, 2), 'goma': round(prom_goma, 2)}
     else:
-        return [0, 0, 0, 0, 0, 0, 0, 0]
+        return {'mezcla': 0, 'insecto': 0, 'hongo': 0, 'dobles': 0, 'color': 0, 'vana': 0, 'pgoma': 0, 'goma': 0}
+    
     
 
 def promedio_porcentaje_calibres(lista_calibres):
@@ -475,16 +476,16 @@ def promedio_porcentaje_calibres(lista_calibres):
         
         for x in lista_calibres:
             precalibre.append(x['precalibre'])
-            calibre_18_20.append(x['18_20'])
-            calibre_20_22.append(x['20_22'])
-            calibre_23_25.append(x['23_25'])
-            calibre_25_27.append(x['25_27'])
-            calibre_27_30.append(x['27_30'])
-            calibre_30_32.append(x['30_32'])
-            calibre_32_34.append(x['32_34'])
-            calibre_34_36.append(x['34_36'])
-            calibre_36_40.append(x['36_40'])
-            calibre_40_mas.append(x['40_mas'])
+            calibre_18_20.append(x['calibre_18_20'])
+            calibre_20_22.append(x['calibre_20_22'])
+            calibre_23_25.append(x['calibre_23_25'])
+            calibre_25_27.append(x['calibre_25_27'])
+            calibre_27_30.append(x['calibre_27_30'])
+            calibre_30_32.append(x['calibre_30_32'])
+            calibre_32_34.append(x['calibre_32_34'])
+            calibre_34_36.append(x['calibre_34_36'])
+            calibre_36_40.append(x['calibre_36_40'])
+            calibre_40_mas.append(x['calibre_40_mas'])
             
         prom_precalibre = sum(precalibre)/len(precalibre)
         prom_calibre_18_20 = sum(calibre_18_20)/len(calibre_18_20)
@@ -498,6 +499,159 @@ def promedio_porcentaje_calibres(lista_calibres):
         prom_calibre_36_40 = sum(calibre_36_40)/len(calibre_36_40)
         prom_calibre_40_mas =sum(calibre_40_mas)/len(calibre_40_mas)
         
-        return [round(prom_precalibre, 1), round(prom_calibre_18_20, 1), round(prom_calibre_20_22, 1), round(prom_calibre_23_25, 1), round(prom_calibre_25_27, 1), round(prom_calibre_27_30, 1), round(prom_calibre_30_32, 1), round(prom_calibre_32_34, 1), round(prom_calibre_34_36, 1), round(prom_calibre_36_40, 1), round(prom_calibre_40_mas, 1)]
+        return {
+                'precalibre': round(prom_precalibre, 2),
+                'calibre_18_20': round(prom_calibre_18_20, 2),
+                'calibre_20_22': round(prom_calibre_20_22, 2),
+                'calibre_23_25': round(prom_calibre_23_25, 2),
+                'calibre_25_27': round(prom_calibre_25_27, 2),
+                'calibre_27_30': round(prom_calibre_27_30, 2),
+                'calibre_30_32': round(prom_calibre_30_32, 2),
+                'calibre_32_34': round(prom_calibre_32_34, 2),
+                'calibre_34_36': round(prom_calibre_34_36, 2),
+                'calibre_36_40': round(prom_calibre_36_40, 2),
+                'calibre_40_mas': round(prom_calibre_40_mas, 2)
+                }
     else:
-        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        return  {
+            'precalibre': 0,
+            'calibre_18_20': 0,
+            'calibre_20_22': 0,
+            'calibre_23_25': 0,
+            'calibre_25_27': 0,
+            'calibre_27_30': 0,
+            'calibre_30_32': 0,
+            'calibre_32_34': 0, 
+            'calibre_34_36': 0,
+            'calibre_36_40': 0,
+            'calibre_40_mas': 0
+        }
+        
+        
+        
+def consulta_kilos_tarjas_res(pkproduccion):
+    # Filtrar por tipo_resultante igual a 2 y calcular la suma de peso menos tipo_patineta
+    tarjasres = TarjaResultante.objects.filter(produccion=pkproduccion).aggregate(kilos=Sum(F('peso') - F('tipo_patineta')))['kilos'] or 0
+    tarja_res_residuo = TarjaResultante.objects.filter(produccion=pkproduccion, tipo_resultante = '2').aggregate(kilos=Sum(F('peso') - F('tipo_patineta')))['kilos'] or 0
+    return tarjasres - tarja_res_residuo
+
+def consulta_muestras_tarjasresultantes_cdc_pepabruta(listalotes):
+    controlesrendimientos = CCTarjaResultante.objects.filter(tarja__in=listalotes)
+    avg_trozo = controlesrendimientos.aggregate(promedio=Avg('trozo'))['promedio']
+    avg_picada = controlesrendimientos.aggregate(promedio=Avg('picada'))['promedio']
+    avg_hongo      = controlesrendimientos.aggregate(promedio=Avg('hongo'))['promedio']
+    avg_danoinsect = controlesrendimientos.aggregate(promedio=Avg('daño_insecto'))['promedio']
+    avg_dobles      = controlesrendimientos.aggregate(promedio=Avg('dobles'))['promedio']
+    avg_goma      = controlesrendimientos.aggregate(promedio=Avg('goma'))['promedio']
+    avg_basura = controlesrendimientos.aggregate(promedio=Avg('basura'))['promedio']
+    avg_mezclavari = controlesrendimientos.aggregate(promedio=Avg('mezcla_variedad'))['promedio']
+    avg_fueracolor = controlesrendimientos.aggregate(promedio=Avg('fuera_color'))['promedio']
+    avg_puntogoma = controlesrendimientos.aggregate(promedio=Avg('punto_goma'))['promedio']
+    avg_pepasana = controlesrendimientos.aggregate(promedio=Avg('pepa_sana'))['promedio']
+    #avg_calibre_2325 = controlesrendimientos.filter(calibre='4').aggregate(promedio=Avg('pepa_sana'))['promedio']
+    
+    
+    if not avg_trozo or not avg_picada or not avg_hongo or not avg_danoinsect or not avg_dobles or not avg_goma or not avg_basura or not avg_mezclavari or not avg_fueracolor or not avg_puntogoma or not avg_pepasana:
+        trozo = 0
+        picada = 0
+        hongo = 0
+        danoinsec = 0
+        dobles = 0
+        goma = 0
+        basura = 0
+        mezclavarie = 0
+        fueracolor = 0
+        puntogoma = 0
+        pepasana = 0
+    else:
+        totalmuestras =  avg_trozo + avg_picada + avg_hongo + avg_danoinsect + avg_dobles + avg_goma + avg_basura + avg_mezclavari + avg_fueracolor + avg_puntogoma + avg_pepasana
+        
+        trozo = avg_trozo/totalmuestras*100
+        picada = avg_picada/totalmuestras*100
+        hongo = avg_hongo/totalmuestras*100
+        danoinsec = avg_danoinsect/totalmuestras*100
+        dobles = avg_dobles/totalmuestras*100
+        goma = avg_goma/totalmuestras*100
+        basura = avg_basura/totalmuestras*100
+        mezclavarie = avg_mezclavari/totalmuestras*100
+        fueracolor = avg_fueracolor/totalmuestras*100
+        puntogoma = avg_puntogoma/totalmuestras*100
+        pepasana = avg_pepasana/totalmuestras*100
+        
+    return [trozo, picada, hongo, danoinsec, dobles, goma, basura, mezclavarie, fueracolor, puntogoma, pepasana] 
+        
+        
+def consulta_tarjasresultantes_en_produccion(pkproduccion):
+    produccion = Produccion.objects.get(pk=pkproduccion)
+    pkstarjas = []
+    pksunicos = []
+    for x in produccion.tarjaresultante_set.all():
+        pkstarjas.append(x.pk)
+        [pksunicos.append(y) for y in pkstarjas if y not in pksunicos]
+    return pksunicos
+
+
+def consulta_muestras_tarjasresultantes_cdc_calibres(listalotes):
+    tarja_res = TarjaResultante.objects.filter(pk__in=listalotes)
+    
+    kilos_sin_calibre = 0    
+    kilos_precalibre = 0
+    kilos_18_20 = 0
+    kilos_20_22 = 0
+    kilos_23_25 = 0
+    kilos_25_27 = 0
+    kilos_27_30 = 0
+    kilos_30_32 = 0
+    kilos_32_34 = 0
+    kilos_34_36 = 0
+    kilos_36_40 = 0
+    kilos_40_mas = 0
+    
+    for x in tarja_res:
+        try:
+            cc_tarja = CCTarjaResultante.objects.get(tarja=x.pk)
+        except:
+            cc_tarja = None
+        
+        if cc_tarja != None:
+            if cc_tarja.calibre == '0':
+                kilos_sin_calibre += x.peso -x.tipo_patineta
+            elif cc_tarja.calibre == '1':
+                kilos_precalibre += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '2':
+                kilos_18_20 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '3':
+                kilos_20_22 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '4':
+                kilos_23_25 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '5':
+                kilos_25_27 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '6':
+                kilos_27_30 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '7':
+                kilos_30_32 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '8':
+                kilos_32_34 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '9':
+                kilos_34_36 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '10':
+                kilos_36_40 += x.peso - x.tipo_patineta
+            elif cc_tarja.calibre == '11':
+                kilos_40_mas += x.peso - x.tipo_patineta
+        
+    return {
+            'sincalibre': kilos_sin_calibre,
+            'precalibre': kilos_precalibre,
+            'calibre_18_20': kilos_18_20,
+            'calibre_20_22': kilos_20_22,
+            'calibre_23_25': kilos_23_25,
+            'calibre_25_27': kilos_25_27,
+            'calibre_27_30': kilos_27_30,
+            'calibre_30_32': kilos_30_32,
+            'calibre_32_34': kilos_32_34,
+            'calibre_34_36': kilos_34_36,
+            'calibre_36_40': kilos_36_40,
+            'calibre_40_mas': kilos_40_mas
+            }
+
+    

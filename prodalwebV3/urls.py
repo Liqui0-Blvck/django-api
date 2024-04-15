@@ -13,16 +13,17 @@ urlpatterns = [
     re_path(r'^auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.jwt')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/', include('recepcionmp.urls', namespace='recepcionmp')),
     path('api/', include('productores.urls', namespace='productores')),
     path('api/', include('core.urls', namespace='core')),
     path('api/', include('comunas.urls')),
-    path('api/', include('comercializador.urls')),
-    path('api/', include('controlcalidad.urls')),
-    path('api/', include('bodegas.urls'))
+    path('api/', include('comercializador.urls', namespace='comercializador')),
+    path('api/', include('controlcalidad.urls', namespace='controlcalidad')),
+    path('api/', include('bodegas.urls', namespace='bodegas')),
+    path('api/', include('produccion.urls', namespace='produccion')),
     
 ]
 

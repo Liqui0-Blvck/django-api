@@ -9,6 +9,7 @@ admin.site.unregister(Group)
 admin.site.unregister(User)
 admin.site.register(Chofer)
 admin.site.register(Camion)
+admin.site.register(CargoPerfil)
 
 class ImportacionDeGrupos(ImportExportModelAdmin):
     pass 
@@ -25,8 +26,8 @@ class PerfilesDeUsuarios(ImportExportModelAdmin):
     pass
 admin.site.register(Perfil, PerfilesDeUsuarios)
 
-@admin.register(CambioEstiloSitio)
-class CambioEstiloSitioAdmin(admin.ModelAdmin):
+@admin.register(PersonalizacionPerfil)
+class PersonalizacionPerfilAdmin(admin.ModelAdmin):
     field = ['activa', 'estilo']
 
 

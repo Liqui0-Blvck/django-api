@@ -86,7 +86,7 @@ CALIBRES_MP = (
     ('7','32/34'),
     ('8','34/36'),
     ('9','36/40'),
-  
+    
 )
 
 TIPO_PRODUCTOS_RECEPCIONMP = (

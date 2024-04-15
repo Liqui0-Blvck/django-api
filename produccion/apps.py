@@ -1,8 +1,9 @@
 from django.apps import AppConfig
 
 
-class CoreConfig(AppConfig):
+class ProduccionConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'core'
+    name = 'produccion'
+    
     def ready(self):
-        import core.signals
+        import produccion.signals

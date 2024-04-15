@@ -37,7 +37,7 @@ def user_directory_path(instance, filename):
 class Perfil(ModeloBase):
     """Model definition for Socio."""
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    sexo = models.CharField(max_length=1, choices=SEXO_CHOICES, default='O')
+    sexo = models.CharField(max_length=30, choices=SEXO_CHOICES, default='O')
     direccion = models.CharField(max_length=60, null=True, blank=True)
     comuna = models.CharField(max_length=30, null=True, blank=True)
     celular = models.CharField(max_length=20,null=True, blank=True)
@@ -61,15 +61,16 @@ class CargoPerfil(ModeloBase):
     
 
 
-class CambioEstiloSitio(models.Model):
+class PersonalizacionPerfil(models.Model):
     user = models.OneToOneField("auth.User", on_delete=models.CASCADE)
     activa = models.BooleanField(default= False)
     estilo = models.CharField(max_length = 15, choices = ESTILO_CHOICES, default= 'minimal-theme')
     cabecera = models.CharField(max_length = 1, choices = CABECERA_CHOICES, default= '4')
+    anio = models.CharField(max_length=4, choices=ANIO, default='2024')
 
     class Meta:
-        verbose_name = ('Estilo sitio Usuario')
-        verbose_name_plural = ('Estilo sitio Usuarios')
+        verbose_name = ('Personalizacion Perfil')
+        verbose_name_plural = ('Personalizacion Perfiles')
 
 
 
@@ -82,7 +83,7 @@ class Operario(ModeloBase):
     rut             = models.CharField(max_length=50, unique=True)
     tipo_operario   = models.CharField(max_length=10, choices=TIPOS_OPERARIO, default='seleccion' )
     activo          = models.BooleanField(default=True)
-    etiquetas       = models.CharField(max_length=50, blank=True) # eliminar en proxima revision
+    etiquetas       = models.CharField(max_length=50, blank=True)
     pago_x_kilo     = models.FloatField(default=50)
 
         

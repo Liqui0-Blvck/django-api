@@ -14,6 +14,11 @@ muestras.register(r'muestras', CCRendimientoViewSet)
 cdcpepa_muestra = routers.NestedSimpleRouter(muestras, r'muestras', lookup='cc_rendimiento')
 cdcpepa_muestra.register(r'cdcpepa', CCPepaViewSet)
 
+router.register(r'produccion/cdc-tarjaresultante', CCTarjaResultanteViewSet)
+router.register(r'reproceso/cdc-tarjaresultante', CCTarjaResultanteReprocesoViewSet)
+
+
+
 urlpatterns = [
     path(r'', include(router.urls)),
     path(r'', include(muestras.urls)),

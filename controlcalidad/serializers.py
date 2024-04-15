@@ -2,8 +2,37 @@ from rest_framework import serializers
 from .models import *
 from recepcionmp.models import *
 
+        
+class CCTarjaResultanteSerializer(serializers.ModelSerializer):
+    estado_cc_label = serializers.SerializerMethodField()
+    codigo_tarja = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = CCTarjaResultante
+        fields = '__all__'
+        
+    def get_estado_cc_label(self, obj):
+        return obj.get_estado_cc_display()
+    
+    def get_codigo_tarja(self, obj):
+        return obj.tarja.codigo_tarja
 
-
+class CCTarjaResultanteReprocesoSerializer(serializers.ModelSerializer):
+    codigo_tarja = serializers.SerializerMethodField(read_only=True)
+    estado_cc_label = serializers.SerializerMethodField()
+    
+    
+    class Meta:
+        model = CCTarjaResultanteReproceso
+        fields = '__all__'
+        
+    def get_estado_cc_label(self, obj):
+        return obj.get_estado_cc_display()
+    
+    def get_codigo_tarja(self, obj):
+        return obj.tarja.codigo_tarja
+        
+        
 class CCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
     class Meta:
         model = CCRecepcionMateriaPrima
@@ -55,6 +84,33 @@ class DetalleCCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
     guia_recepcion = serializers.SerializerMethodField()
     estado_guia = serializers.SerializerMethodField()
     fotos_cc = FotosCCRecepcionMateriaPrimaSerializer(many=True, read_only=True, source='fotoscc_set')
+    kilos_totales_recepcion = serializers.SerializerMethodField()
+    variedad = serializers.SerializerMethodField()
+    
+    def get_variedad(self, obj):
+        variedad = None
+        for envase in obj.recepcionmp.envasesguiarecepcionmp_set.all():
+            variedad = envase.get_variedad_display()
+        return variedad
+            
+    
+    def get_kilos_totales_recepcion(self, obj):
+        kilos_brutos = obj.recepcionmp.kilos_brutos_1 + obj.recepcionmp.kilos_brutos_2
+        kilos_tara = obj.recepcionmp.kilos_tara_1 + obj.recepcionmp.kilos_tara_2
+        kilos_envase = 0
+        cantidad_envases = 0
+        for envase in obj.recepcionmp.envasesguiarecepcionmp_set.all():
+            if envase != 'Granel' and envase.envase.peso > 0:
+                kilos_envase += envase.envase.peso
+                cantidad_envases += envase.cantidad_envases
+        print(kilos_envase)
+        print(cantidad_envases)
+        
+        
+        total_kilos_envases = kilos_envase * cantidad_envases
+        total = (kilos_brutos - total_kilos_envases) - kilos_tara
+        
+        return total
     
     def get_presencia_insectos_selected(self, obj):
         if obj.presencia_insectos:
@@ -188,6 +244,52 @@ class CalculoFinalSerializer(serializers.Serializer):
     final_cat2 = serializers.FloatField()
     merma_des = serializers.FloatField()
     final_des = serializers.FloatField()
+    
+class PromedioMuestra(serializers.Serializer):
+    basura = serializers.FloatField()
+    pelon = serializers.FloatField()
+    ciega = serializers.FloatField()
+    cascara = serializers.FloatField()
+    pepa_huerto = serializers.FloatField()
+    pepa_bruta = serializers.FloatField()
+    
+class PromedioPepaMuestraSerializer(serializers.Serializer):
+    mezcla = serializers.FloatField()
+    insecto = serializers.FloatField()
+    hongo = serializers.FloatField()
+    dobles = serializers.FloatField()
+    color = serializers.FloatField()
+    vana = serializers.FloatField()
+    pgoma = serializers.FloatField()
+    goma = serializers.FloatField()
+    
+class PromedioCalibresSerializer(serializers.Serializer):
+    precalibre = serializers.FloatField()
+    calibre_18_20 = serializers.FloatField()
+    calibre_20_22 = serializers.FloatField()
+    calibre_23_25 = serializers.FloatField()
+    calibre_25_27 = serializers.FloatField()
+    calibre_27_30 = serializers.FloatField()
+    calibre_30_32 = serializers.FloatField()
+    calibre_32_34 = serializers.FloatField()
+    calibre_34_36 = serializers.FloatField()
+    calibre_36_40 = serializers.FloatField()
+    calibre_40_mas = serializers.FloatField()
+    
+class CalibresResultadoSerializer(serializers.Serializer):
+    sincalibre = serializers.FloatField()
+    precalibre = serializers.FloatField()
+    calibre_18_20 = serializers.FloatField()
+    calibre_20_22 = serializers.FloatField()
+    calibre_23_25 = serializers.FloatField()
+    calibre_25_27 = serializers.FloatField()
+    calibre_27_30 = serializers.FloatField()
+    calibre_30_32 = serializers.FloatField()
+    calibre_32_34 = serializers.FloatField()
+    calibre_34_36 = serializers.FloatField()
+    calibre_36_40 = serializers.FloatField()
+    calibre_40_mas = serializers.FloatField()
+    
     
     
 class EstadoAprobacionJefaturaSerializer(serializers.ModelSerializer):

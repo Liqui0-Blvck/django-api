@@ -36,5 +36,7 @@ djoser
 djangorestframework-simplejwt
 django-cors-headers
 drf-nested-routers
+dj-notebook
+jupyterlab
 
 

@@ -1,5 +1,10 @@
 ### estados modelos App Bodegas###
 
+ESTADO_BIN_BODEGA = (
+    ('0', 'Creado en Bodega'),
+    ('1', 'Eliminado de Bodega'),
+)
+
 CALIBRES = (
     ('Categoria 1', (
         ('0','Sin Calibre'),
@@ -246,25 +251,6 @@ CALLE_BODEGA_G5 = (
 )
 
 
-FILA = (
-    ('-', 'En Programa'),
-    ('A', 'Columna A'),
-    ('B', 'Columna B'),
-    ('C', 'Columna C'),
-    ('D', 'Columna D'),
-)
-
-POSICION = (
-    ('-', 'En Programa'),
-    ('1', 'Espacio 1'),
-    ('2', 'Espacio 2'),
-    ('3', 'Espacio 3'),
-    ('4', 'Espacio 4'),
-    ('5', 'Espacio 5'),
-    ('6', 'Espacio 6'),
-    ('7', 'Espacio 7'),
-    ('8', 'Espacio 8'),
-)
 
 TIPOS_BIN = (
     (40, 'Patineta Negra'),
@@ -279,15 +265,9 @@ UBICACION_PATIO_TECHADO_EXT = (
     ('1','Sector 1'),
     ('2','Sector 2'),
     ('3','Sector 3'),
+    
 )
 
-UBICACION_PATIO_TECHADO_EXT_LI = (
-    ('0', 'Asigne Ubicación'),
-    ('1','Sector 1'),
-    ('2','Sector 2'),
-    ('3','Sector 3'),
-    ('4', 'Pavo'),
-)
 
 
 ESTADO_SEMI_ELAB_G6 = (

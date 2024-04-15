@@ -2,7 +2,8 @@ from django.db import models
 from recepcionmp.estados_modelo import *
 from simple_history.models import HistoricalRecords as Historia
 from controlcalidad.estados_modelo import *
-
+from .estados_modelo import *
+from bodegas.estados_modelo import *
 
 def fotos_cc(instance, filename):
     return 'controlcalidad_recepcionmp/CDC_{0}/fotos_cc/{1}'.format(instance.pk, filename)
@@ -44,7 +45,7 @@ class CCRecepcionMateriaPrima(models.Model):
 class FotosCC(models.Model):
     ccrecepcionmp = models.ForeignKey("controlcalidad.CCRecepcionMateriaPrima", on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to=fotos_cc, blank=True, verbose_name='Fotos Control', null=True)
-
+    
 
 
 
@@ -114,3 +115,69 @@ class CCPepa(models.Model):
     def __str__(self):
         return "CC de Pepa asociada a Muestra %s"% (self.cc_rendimiento.pk)   
     
+### Modulo Produccion ###
+
+class CCTarjaResultante(models.Model):
+    tarja                   = models.OneToOneField("produccion.TarjaResultante", on_delete=models.CASCADE)
+    estado_cc               = models.CharField(choices=ESTADO_CC_TARJA_RESULTANTE, default='1', max_length=1)
+    variedad                = models.CharField(choices=VARIEDAD, default='---', max_length=3)
+    calibre                 = models.CharField(choices=CALIBRES, default='0', max_length=25)
+    cantidad_muestra        = models.FloatField(choices=CANTIDAD_MUESTRA_PRODUCCION,blank=True, null=True)
+    trozo                   = models.FloatField(blank=True, null=True,default=0.0 )
+    picada                  = models.FloatField(blank=True, null=True,default=0.0)
+    hongo                   = models.FloatField(blank=True, null=True,default=0.0)
+    daño_insecto            = models.FloatField(blank=True, null=True,default=0.0)
+    dobles                  = models.FloatField(blank=True, null=True,default=0.0)
+    goma                    = models.FloatField(blank=True, null=True,default=0.0)
+    basura                  = models.FloatField(blank=True, null=True,default=0.0)
+    mezcla_variedad         = models.FloatField(blank=True, null=True,default=0.0)
+    pepa_sana               = models.FloatField(blank=True, null=True,default=0.0)
+    fuera_color             = models.FloatField(blank=True, null=True,default=0.0)
+    punto_goma              = models.FloatField(blank=True, null=True,default=0.0)
+    vana_deshidratada       = models.FloatField(default=0.0)
+    fecha_creacion          = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion      = models.DateTimeField(auto_now=True)
+    cc_registrado_por       = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
+    historia                = Historia()
+    
+    class Meta:
+        verbose_name = ('CC Tarja Resultante Producción')
+        verbose_name_plural = ('3. CC Tarjas Resultantes Producción')
+        ordering = ('-pk', '-fecha_creacion')
+     
+        
+
+    def __str__(self):
+        return "CC %s de la tarja %s"% (self.pk, self.tarja.codigo_tarja)
+    
+class CCTarjaResultanteReproceso(models.Model):
+    tarja                   = models.ForeignKey("produccion.TarjaResultanteReproceso", on_delete=models.CASCADE)
+    estado_cc               = models.CharField(choices=ESTADO_CC_TARJA_RESULTANTE, default='1', max_length=1)
+    variedad                = models.CharField(choices=VARIEDAD, default='---', max_length=3)
+    calibre                 = models.CharField(choices=CALIBRES, default='0', max_length=25)
+    cantidad_muestra        = models.FloatField(choices=CANTIDAD_MUESTRA_PRODUCCION,blank=True, null=True)
+    trozo                   = models.FloatField(blank=True, null=True,default=0.0 )
+    picada                  = models.FloatField(blank=True, null=True,default=0.0)
+    hongo                   = models.FloatField(blank=True, null=True,default=0.0)
+    daño_insecto            = models.FloatField(blank=True, null=True,default=0.0)
+    dobles                  = models.FloatField(blank=True, null=True,default=0.0)
+    goma                    = models.FloatField(blank=True, null=True,default=0.0)
+    basura                  = models.FloatField(blank=True, null=True,default=0.0)
+    mezcla_variedad         = models.FloatField(blank=True, null=True,default=0.0)
+    pepa_sana               = models.FloatField(blank=True, null=True,default=0.0)
+    fuera_color             = models.FloatField(blank=True, null=True,default=0.0)
+    punto_goma              = models.FloatField(blank=True, null=True,default=0.0)
+    vana_deshidratada       = models.FloatField(default=0.0)
+    fecha_creacion          = models.DateTimeField(auto_now_add=True)
+    fecha_modificacion      = models.DateTimeField(auto_now=True)
+    cc_registrado_por       = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True)
+    historia                = Historia()
+    
+    class Meta:
+        verbose_name = 'CC Tarja Resultante Reproceso'
+        verbose_name_plural = '3. CC Tarjas Resultantes Reproceso'
+        ordering = ('-pk', )
+
+    def __str__(self):
+        return "CC %s de la tarja %s"% (self.pk, self.tarja.codigo_tarja)
+

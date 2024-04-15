@@ -100,3 +100,8 @@ class ChoferSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class PersonalizacionPerfilSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    class Meta: 
+        model = PersonalizacionPerfil
+        fields = '__all__'
