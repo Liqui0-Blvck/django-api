@@ -408,9 +408,7 @@ def promedio_porcentaje_muestras(lista_muestras):
             netos = calcula_netos_lote(lote.recepcionmp.pk)
             brutos = x['pepa_bruta'] * netos / 100
             pepa_bruta += round(brutos, 1)
-            
-        print(pepa_bruta)
-        print(netos_totales)
+
         
         
         prom_basura = sum(basura)/len(basura)
@@ -420,7 +418,6 @@ def promedio_porcentaje_muestras(lista_muestras):
         prom_pepa_huerto = sum(pepa_huerto)/len(pepa_huerto)
         prom_pepa_bruta = (pepa_bruta / netos_totales) * 100
         
-        print(prom_pepa_bruta)
         
         return {'basura':round(prom_basura, 2), 'pelon':round(prom_pelon, 2), 'ciega':round(prom_ciega, 2), 'cascara':round(prom_cascara, 2), 'pepa_huerto':round(prom_pepa_huerto, 2), 'pepa_bruta':round(prom_pepa_bruta, 3)}
     else:
@@ -534,8 +531,8 @@ def promedio_porcentaje_calibres(lista_calibres):
         
 def consulta_kilos_tarjas_res(pkproduccion):
     # Filtrar por tipo_resultante igual a 2 y calcular la suma de peso menos tipo_patineta
-    tarjasres = TarjaResultante.objects.filter(produccion=pkproduccion).aggregate(kilos=Sum(F('peso') - F('tipo_patineta')))['kilos']
-    tarja_res_residuo = TarjaResultante.objects.filter(produccion=pkproduccion, tipo_resultante = '2').aggregate(kilos=Sum(F('peso') - F('tipo_patineta')))['kilos']
+    tarjasres = TarjaResultante.objects.filter(produccion=pkproduccion).aggregate(kilos=Sum(F('peso') - F('tipo_patineta')))['kilos'] or 0
+    tarja_res_residuo = TarjaResultante.objects.filter(produccion=pkproduccion, tipo_resultante = '2').aggregate(kilos=Sum(F('peso') - F('tipo_patineta')))['kilos'] or 0
     return tarjasres - tarja_res_residuo
 
 def consulta_muestras_tarjasresultantes_cdc_pepabruta(listalotes):

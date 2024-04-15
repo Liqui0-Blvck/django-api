@@ -191,6 +191,66 @@ class BinsEnReprocesoViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    
+    # @action(detail=False, methods=['POST'], url_path='registrar_bins/(?P<pks_lotes>[^/.]+)')
+    # def registrar_bins(self, request, pks_lotes=None, reproceso_pk=None):
+    #     pks_list = pks_lotes.split(',')
+    #     reproceso = get_object_or_404(Reproceso, pk=reproceso_pk)
+        
+    #     for x in pks_list:
+
+        
+        # Crear objetos BinsEnReproceso para cada bin bodega en la lista
+            # nombre_model = request.data.get('tipo_bin_bodega', None)
+            # id_binbodega = request.data.get('id_bin_bodega', None)
+            # if nombre_model == 'bodegag1':    
+            #     ct = ContentType.objects.get_for_model(BodegaG1)
+            #     binbodega = get_object_or_404(BodegaG1, pk=id_binbodega)
+            # elif nombre_model == 'bodegag2':
+            #     ct = ContentType.objects.get_for_model(BodegaG2)
+            #     binbodega = get_object_or_404(BodegaG2, pk=id_binbodega)
+            # elif nombre_model == 'bodegag1reproceso':
+            #     ct = ContentType.objects.get_for_model(BodegaG1Reproceso)
+            #     binbodega = get_object_or_404(BodegaG1Reproceso, pk=id_binbodega)
+            # elif nombre_model == 'bodegag2reproceso':
+            #     ct = ContentType.objects.get_for_model(BodegaG2Reproceso)
+            #     binbodega = get_object_or_404(BodegaG2Reproceso, pk=id_binbodega)
+            # else:
+            #     return Response({"error":"No hay bin que coincida"}, status=status.HTTP_400_BAD_REQUEST)
+            # datos = {
+            #     "id_bin_bodega": binbodega.pk,
+            #     "tipo_bin_bodega": ct.pk,
+            #     "reproceso": reproceso.pk
+            # }
+            # serializer = self.get_serializer(data=datos)
+            # serializer.is_valid(raise_exception=True)
+            # serializer.save()
+            # return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    # @action(detail=False, methods=['POST'], url_path='registrar_bins/(?P<pks_lotes>[^/.]+)')
+    # def registrar_bins(self, request, pks_lotes=None, reproceso_pk=None):
+    #     pks_list = pks_lotes.split(',')
+    #     reproceso = get_object_or_404(Reproceso, pk = reproceso_pk)
+    #     print(reproceso)
+    #     print(pks_list)
+    #     BinsEnReproceso.objects.update_or_create(reproceso = reproceso, id_bin_bodega__in = list(pks_list))
+    #     # LotesPrograma.objects.update_or_create(reproceso = reproceso, bodega_techado_ext__in = list(pks_list))
+    #     return Response({ 'message': 'Creado con exito'}, status=status.HTTP_201_CREATED)
+    
+    # @action(detail=False, methods=['DELETE'], url_path='eliminar_lotes/(?P<pks_lotes>[^/.]+)')  
+    # def eliminar_lotes(self, request, pks_lotes=None, reproceso_pk=None):
+    #     pks_list = pks_lotes.split(',')
+    #     reproceso = get_object_or_404(Reproceso,pk = reproceso_pk)
+    #     LotesPrograma.objects.filter(reproceso = reproceso, bodega_techado_ext__in = list(pks_list)).delete()
+    #     return Response({ 'message': 'Lote Eliminado con exito'})
+    
+    # @action(detail=False, methods=['PUT', 'PATCH'], url_path='actualizar_estados_lotes/(?P<pks_lotes>[^/.]+)')
+    # def actualizar_estados_lotes(self, request, pks_lotes=None, reproceso_pk=None):
+    #     pks_list = pks_lotes.split(',')
+    #     reproceso = get_object_or_404(Reproceso,pk = reproceso_pk)
+    #     LotesPrograma.objects.filter(reproceso = reproceso, bodega_techado_ext__in = list(pks_list)).update(bin_procesado = True)
+    #     return Response({ 'message': 'Lote Actualizados con exito'})
+    
 class TarjaResultanteReprocesoViewSet(viewsets.ModelViewSet):
     queryset = TarjaResultanteReproceso.objects.all()
     serializer_class = TarjaResultanteReprocesoSerializer
@@ -212,6 +272,8 @@ class TarjaResultanteReprocesoViewSet(viewsets.ModelViewSet):
         queryset = TarjaResultanteReproceso.objects.filter(reproceso=produccion)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    
+    
 
 
 class OperariosEnReprocesoViewSet(viewsets.ModelViewSet):

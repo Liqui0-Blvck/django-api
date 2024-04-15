@@ -8,6 +8,8 @@ from django.contrib.contenttypes.models import ContentType
 
 @receiver(post_save, sender=PatioTechadoExterior)
 def vincular_envases_a_guiapatio_despues_de_asignar_ubicacion_descarga(sender, instance, created, **kwargs):
+    peso_total_recepcion = None
+    print(peso_total_recepcion)
     if created and instance:
         pass
     else:
@@ -15,6 +17,8 @@ def vincular_envases_a_guiapatio_despues_de_asignar_ubicacion_descarga(sender, i
             if instance.tipo_recepcion.model == 'recepcionmp':
                 pkrecepcionmp = instance.lote_recepcionado.pk
                 recepcion = RecepcionMp.objects.get(pk=pkrecepcionmp)
+                peso_total_recepcion = (recepcion.kilos_brutos_1 + recepcion.kilos_brutos_2) - (recepcion.kilos_tara_1 + recepcion.kilos_tara_2)
+                print(peso_total_recepcion)
                 n_envases_en_rel = recepcion.envasesguiarecepcionmp_set.all().count()
                 if n_envases_en_rel == 1:
                     for x in recepcion.envasesguiarecepcionmp_set.all():
@@ -24,6 +28,7 @@ def vincular_envases_a_guiapatio_despues_de_asignar_ubicacion_descarga(sender, i
                             pass
                         else:
                             for xx in (n+1 for n in range(x.cantidad_envases)):
+                                
                                 EnvasesPatioTechadoExt.objects.update_or_create(guia_patio=instance, variedad=x.variedad, numero_bin=xx)
                                 
                             RecepcionMp.objects.filter(pk=pkrecepcionmp).update(estado_recepcion='5')
@@ -33,6 +38,9 @@ def vincular_envases_a_guiapatio_despues_de_asignar_ubicacion_descarga(sender, i
                     #     listapksenvases.append(x.pk)
                     listapksenvases = recepcion.envasesguiarecepcionmp_set.values_list('pk', flat=True)
                     print(listapksenvases.count())
+                    peso_total_recepcion = (recepcion.kilos_brutos_1 + recepcion.kilos_brutos_2) - (recepcion.kilos_tara_1 + recepcion.kilos_tara_2)
+                    print("soy el peso fruto", peso_total_recepcion)
+                    
                     for x in listapksenvases:
                         tiposenvases =  EnvasesGuiaRecepcionMp.objects.get(pk=x)
                         envase = tiposenvases.envase.nombre

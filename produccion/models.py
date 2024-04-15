@@ -71,6 +71,7 @@ class TarjaResultante(ModeloBaseHistorico):
     ubicacion            = models.CharField(choices=UBICACION_TARJA, default='0', max_length=1)
     codigo_tarja         = models.CharField(max_length=9,blank=True, null=True, unique=True)
     calle_bodega         = models.CharField(max_length=2, choices=CALLE_BODEGA_2)
+    esta_eliminado       = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "1.3 - Tarja Resultante"
@@ -144,6 +145,7 @@ class TarjaResultanteReproceso(ModeloBaseHistorico):
     codigo_tarja        = models.CharField(max_length=9,blank=True, null=True, unique=True)
     calle_bodega        = models.CharField(max_length=2, choices=CALLE_BODEGA_2)
     registrado_por      = models.ForeignKey("auth.User", on_delete=models.CASCADE, blank= True, null=True)
+    esta_eliminado      = models.BooleanField(default=False)
  
     
     class Meta:

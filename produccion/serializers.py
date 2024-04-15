@@ -81,7 +81,6 @@ class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
     
     def get_guia_patio(self, obj):
         patio_techado_ext = EnvasesPatioTechadoExt.objects.filter(pk=obj.bodega_techado_ext.pk).first()
-        print("soy el id de recepcion", patio_techado_ext.guia_patio.id_recepcion)
         if patio_techado_ext:
             return patio_techado_ext.guia_patio.id_recepcion    
         else:
@@ -116,9 +115,25 @@ class DetalleLotesProgramaSerializer(serializers.ModelSerializer):
         
         
 class OperariosEnProduccionSerializer(serializers.ModelSerializer):
+    nombres = serializers.SerializerMethodField()
+    rut_operario = serializers.SerializerMethodField()
+    tipo_operario = serializers.SerializerMethodField()
+    
+    
     class Meta:
         model = OperariosEnProduccion
         fields = '__all__'
+        
+    def get_tipo_operario(self, obj):
+        return obj.operario.get_tipo_operario_display()
+        
+    def get_rut_operario(self, obj):
+        return obj.operario.rut
+    
+    def get_nombres(self, obj):
+        return f'{obj.operario.nombre} {obj.operario.apellido}'
+        
+        
         
 class DetalleOperariosEnProduccionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -166,9 +181,22 @@ class DetalleReprocesoSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class OperariosEnReprocesoSerializer(serializers.ModelSerializer):
+    nombres = serializers.SerializerMethodField()
+    rut_operario = serializers.SerializerMethodField()
+    tipo_operario = serializers.SerializerMethodField()
+    
     class Meta:
         model = OperariosEnReproceso
         fields = '__all__'
+        
+    def get_tipo_operario(self, obj):
+        return obj.operario.get_tipo_operario_display()
+        
+    def get_rut_operario(self, obj):
+        return obj.operario.rut
+    
+    def get_nombres(self, obj):
+        return f'{obj.operario.nombre} {obj.operario.apellido}'
         
 class DetalleOperariosEnReprocesoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -176,10 +204,20 @@ class DetalleOperariosEnReprocesoSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class BinsEnReprocesoSerializer(serializers.ModelSerializer):
-    
+    programa_produccion = serializers.SerializerMethodField()
+
     class Meta:
         model = BinsEnReproceso
         fields = '__all__'
+    
+    def get_programa_produccion(self, obj):
+        if obj.tipo_bin_bodega.model == 'bodegag1' or obj.tipo_bin_bodega.model == 'bodegag2' or obj.tipo_bin_bodega.model == 'bodegaresiduos':
+            return obj.bin_bodega.produccion.produccion.id
+        elif obj.tipo_bin_bodega.model == 'bodegag1reproceso' or obj.tipo_bin_bodega.model == 'bodegag2reproceso' or obj.tipo_bin_bodega.model == 'bodegaresiduosreproceso':
+            return obj.bin_bodega.reproceso.reproceso.id
+        else:
+            return obj.pk
+        
         
     
      

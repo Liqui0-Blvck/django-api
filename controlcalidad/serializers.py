@@ -18,10 +18,19 @@ class CCTarjaResultanteSerializer(serializers.ModelSerializer):
         return obj.tarja.codigo_tarja
 
 class CCTarjaResultanteReprocesoSerializer(serializers.ModelSerializer):
+    codigo_tarja = serializers.SerializerMethodField(read_only=True)
+    estado_cc_label = serializers.SerializerMethodField()
+    
+    
     class Meta:
         model = CCTarjaResultanteReproceso
         fields = '__all__'
         
+    def get_estado_cc_label(self, obj):
+        return obj.get_estado_cc_display()
+    
+    def get_codigo_tarja(self, obj):
+        return obj.tarja.codigo_tarja
         
         
 class CCRecepcionMateriaPrimaSerializer(serializers.ModelSerializer):
