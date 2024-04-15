@@ -77,8 +77,11 @@ class LotesProgramaViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'], url_path='registrar_lotes/(?P<pks_lotes>[^/.]+)')
     def registrar_lotes(self, request, pks_lotes=None, produccion_pk=None):
         pks_list = pks_lotes.split(',')
+        print(pks_list)
         produccion = get_object_or_404(Produccion, pk = produccion_pk)
-        LotesPrograma.objects.update_or_create(produccion = produccion, bodega_techado_ext__in = list(pks_list))
+        for x in pks_list:
+            envase = EnvasesPatioTechadoExt.objects.get(pk = x)
+            LotesPrograma.objects.update_or_create(produccion = produccion, bodega_techado_ext = envase)
         return Response({ 'message': 'Creado con exito'}, status=status.HTTP_201_CREATED)
     
     @action(detail=False, methods=['DELETE'], url_path='eliminar_lotes/(?P<pks_lotes>[^/.]+)')  
@@ -92,7 +95,9 @@ class LotesProgramaViewSet(viewsets.ModelViewSet):
     def actualizar_estados_lotes(self, request, pks_lotes=None, produccion_pk=None):
         pks_list = pks_lotes.split(',')
         produccion = get_object_or_404(Produccion,pk = produccion_pk)
-        LotesPrograma.objects.filter(produccion = produccion, bodega_techado_ext__in = list(pks_list)).update(bin_procesado = True)
+        for x in pks_list:
+            envase = EnvasesPatioTechadoExt.objects.get(pk = x)
+            LotesPrograma.objects.filter(produccion = produccion, bodega_techado_ext = envase).update(bin_procesado = True)
         return Response({ 'message': 'Lote Actualizados con exito'})
     
         
