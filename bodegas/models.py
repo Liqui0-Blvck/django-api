@@ -53,7 +53,8 @@ class EnvasesPatioTechadoExt(ModeloBase):
     class Meta:
         verbose_name = ('Envase Bodega Patio Exterior')
         verbose_name_plural = ('Envases Bodega Patio Exterior')
-    
+        ordering = ['-pk']
+        
     def __str__(self):
         
         return "%s"% self.pk

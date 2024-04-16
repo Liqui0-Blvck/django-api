@@ -132,6 +132,10 @@ class BinsEnReproceso(ModeloBaseHistorico):
     class Meta:
         verbose_name = '2.2 - Bin Ingresado a Reproceso'
         verbose_name_plural = '2.2 - Bins Ingresados a Reprocesos'
+        constraints = [models.UniqueConstraint(
+            name='%(app_label)s_%(class)s_unique_relationships',
+            fields=['reproceso', 'tipo_bin_bodega', 'id_bin_bodega']
+        )]
         
     def __str__(self):
         return 'Bins %s en Reproceso N°%s'%(self.bin_bodega, self.reproceso.pk)

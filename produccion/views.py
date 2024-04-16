@@ -7,6 +7,7 @@ from rest_framework import status
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework.decorators import action
 from django.contrib.contenttypes.models import *
+from django.http import Http404
 
 
 class ProduccionViewSet(viewsets.ModelViewSet):
@@ -197,40 +198,92 @@ class BinsEnReprocesoViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     
+    @action(detail=False, methods=['POST'], url_path='registrar_bins/(?P<pks_lotes>[^/.]+)')
+    def registrar_bins(self, request, pks_lotes=None, reproceso_pk=None):
+        pks_list = pks_lotes.split(',')
+        reproceso = get_object_or_404(Reproceso, pk=reproceso_pk)
+        
+        print(pks_list)
+
+        # Lista de modelos en los que verificar la existencia del ID
+        modelos = [BodegaG1, BodegaG2, BodegaG1Reproceso, BodegaG2Reproceso]
+        
+        bin_reproceso = None
+        print(bin_reproceso)
+        
+        # bin_en_reproceso = BodegaG2.objects.get(pk = pks_list[0])
+        # print(bin_en_reproceso)
+        
+        
+        for pk in pks_list:
+            for modelo in modelos:
+                try:
+                    bin_reproceso = get_object_or_404(modelo, pk=pk)
+                    print("estoy imprimiendome desde el bucle", bin_reproceso)
+                    ct = ContentType.objects.get_for_model(bin_reproceso)
+                    print(ct)
+                    datos = {
+                        "id_bin_bodega": bin_reproceso.pk,
+                        "tipo_bin_bodega": ct.pk,
+                        "reproceso": reproceso.pk
+                    }
+                    serializer = self.get_serializer(data=datos)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
+                    
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    
+                    break  # Si se encuentra en algún modelo, salir del bucle
+                except Http404:
+                    continue  # Si no se encuentra en este modelo, intentar con el siguiente
+            
+            if bin_reproceso is not None:
+                # Se encontró en algún modelo
+                break
+        else:
+            # No se encontró en ninguno de los modelos
+            print("# No se encontró en ninguno de los modelos")
+        
+        return Response({ 'message': 'Ningún objeto encontrado para los IDs proporcionados'})
+
+    
+    
     # @action(detail=False, methods=['POST'], url_path='registrar_bins/(?P<pks_lotes>[^/.]+)')
     # def registrar_bins(self, request, pks_lotes=None, reproceso_pk=None):
-    #     pks_list = pks_lotes.split(',')
+    #     pks_list = pks_lotes.split(',') # type: ignore
     #     reproceso = get_object_or_404(Reproceso, pk=reproceso_pk)
-        
-    #     for x in pks_list:
 
+    #     for x in pks_list:
+    #         print(x)
+    #   
+    # bin_reproceso = None
+            
+    #         print(bin_reproceso)
+    #         try:
+    #             bin_reproceso = get_object_or_404(BodegaG1, pk = x)
+    #             bin_reproceso = get_object_or_404(BodegaG2, pk = x)
+    #             bin_reproceso = get_object_or_404(BodegaG1Reproceso, pk = x)
+    #             bin_reproceso = get_object_or_404(BodegaG2, pk = x)
+                
+                
+    #             # bin_en_reproceso = BinsEnReproceso.objects.get(pk = x)
+    #             # print(bin_en_reproceso)
+    #         except:
+    #           print('An exception occurred')
         
-        # Crear objetos BinsEnReproceso para cada bin bodega en la lista
-            # nombre_model = request.data.get('tipo_bin_bodega', None)
-            # id_binbodega = request.data.get('id_bin_bodega', None)
-            # if nombre_model == 'bodegag1':    
-            #     ct = ContentType.objects.get_for_model(BodegaG1)
-            #     binbodega = get_object_or_404(BodegaG1, pk=id_binbodega)
-            # elif nombre_model == 'bodegag2':
-            #     ct = ContentType.objects.get_for_model(BodegaG2)
-            #     binbodega = get_object_or_404(BodegaG2, pk=id_binbodega)
-            # elif nombre_model == 'bodegag1reproceso':
-            #     ct = ContentType.objects.get_for_model(BodegaG1Reproceso)
-            #     binbodega = get_object_or_404(BodegaG1Reproceso, pk=id_binbodega)
-            # elif nombre_model == 'bodegag2reproceso':
-            #     ct = ContentType.objects.get_for_model(BodegaG2Reproceso)
-            #     binbodega = get_object_or_404(BodegaG2Reproceso, pk=id_binbodega)
-            # else:
-            #     return Response({"error":"No hay bin que coincida"}, status=status.HTTP_400_BAD_REQUEST)
-            # datos = {
-            #     "id_bin_bodega": binbodega.pk,
-            #     "tipo_bin_bodega": ct.pk,
-            #     "reproceso": reproceso.pk
-            # }
-            # serializer = self.get_serializer(data=datos)
-            # serializer.is_valid(raise_exception=True)
-            # serializer.save()
-            # return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     print()
+        
+    # @action(detail=False, methods=['POST'], url_path='registrar_lotes/(?P<pks_lotes>[^/.]+)')
+    # def registrar_lotes(self, request, pks_lotes=None, produccion_pk=None):
+    #     pks_list = pks_lotes.split(',')
+    #     print(pks_list)
+    #     produccion = get_object_or_404(Produccion, pk = produccion_pk)
+    #     for x in pks_list:
+    #         envase = EnvasesPatioTechadoExt.objects.get(pk = x)
+    #         LotesPrograma.objects.update_or_create(produccion = produccion, bodega_techado_ext = envase)
+    #     return Response({ 'message': 'Creado con exito'}, status=status.HTTP_201_CREATED)
+        
+       
     
     # @action(detail=False, methods=['POST'], url_path='registrar_bins/(?P<pks_lotes>[^/.]+)')
     # def registrar_bins(self, request, pks_lotes=None, reproceso_pk=None):

@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from recepcionmp.models import RecepcionMp, EnvasesGuiaRecepcionMp
 from django.db.models import Count, Sum, Avg, FloatField, F
 from django.contrib.contenttypes.models import ContentType
-
+import math
 
 @receiver(post_save, sender=PatioTechadoExterior)
 def vincular_envases_a_guiapatio_despues_de_asignar_ubicacion_descarga(sender, instance, created, **kwargs):
@@ -17,7 +17,9 @@ def vincular_envases_a_guiapatio_despues_de_asignar_ubicacion_descarga(sender, i
             if instance.tipo_recepcion.model == 'recepcionmp':
                 pkrecepcionmp = instance.lote_recepcionado.pk
                 recepcion = RecepcionMp.objects.get(pk=pkrecepcionmp)
-                peso_total_recepcion = (recepcion.kilos_brutos_1 + recepcion.kilos_brutos_2) - (recepcion.kilos_tara_1 + recepcion.kilos_tara_2)
+                peso_envase = recepcion.envases.first().peso
+                print(peso_envase)
+                peso_total_recepcion = (recepcion.kilos_brutos_1 + recepcion.kilos_brutos_2) - (peso_envase)
                 print(peso_total_recepcion)
                 n_envases_en_rel = recepcion.envasesguiarecepcionmp_set.all().count()
                 if n_envases_en_rel == 1:
@@ -25,11 +27,28 @@ def vincular_envases_a_guiapatio_despues_de_asignar_ubicacion_descarga(sender, i
                         envase = x.envase.nombre
                         if envase == 'Granel':
                             print("GRANEL 1 rel en ENVASES")
+                            cantidad_envases_granel = math.ceil(peso_total_recepcion / 400)
+                            
+                            peso_por_envase = peso_total_recepcion / cantidad_envases_granel
+                            
+                            for i in range(cantidad_envases_granel):
+                                numero_bin_actual = i + 1
+                                EnvasesPatioTechadoExt.objects.update_or_create(
+                                    guia_patio=instance,
+                                    variedad=x.variedad,
+                                    numero_bin=numero_bin_actual,
+                                    kilos_fruta = peso_por_envase
+                                )
                             pass
                         else:
                             for xx in (n+1 for n in range(x.cantidad_envases)):
-                                
-                                EnvasesPatioTechadoExt.objects.update_or_create(guia_patio=instance, variedad=x.variedad, numero_bin=xx)
+                                peso_por_envase = peso_total_recepcion / x.cantidad_envases
+                                EnvasesPatioTechadoExt.objects.update_or_create(
+                                    guia_patio=instance,
+                                    variedad=x.variedad,
+                                    numero_bin=xx,
+                                    kilos_fruta = peso_por_envase
+                                    )
                                 
                             RecepcionMp.objects.filter(pk=pkrecepcionmp).update(estado_recepcion='5')
                 else:
